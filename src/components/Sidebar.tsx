@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { DndContext, closestCenter, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, horizontalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { restrictToHorizontalAxis } from "./dndModifiers";
@@ -396,6 +396,7 @@ function ThreadItem({ title, active, pinned, branched, onPin, onSelect }: { titl
 
 function SortableProfileIcon({ profile, isActive, onClick }: { profile: Profile; isActive: boolean; onClick: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: profile.id });
+  const didDrag = useRef(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -405,22 +406,33 @@ function SortableProfileIcon({ profile, isActive, onClick }: { profile: Profile;
   };
 
   return (
-    <div ref={setNodeRef} style={style} data-profile-id={profile.id} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      data-profile-id={profile.id}
+      {...attributes}
+      {...listeners}
+      onPointerDown={(e) => {
+        didDrag.current = false;
+        listeners?.onPointerDown?.(e as any);
+      }}
+      onPointerMove={() => { didDrag.current = true; }}
+      onPointerUp={() => {
+        if (!didDrag.current) onClick();
+      }}
+    >
       <Tooltip content={profile.name} side="top">
-        <button
-          className={`flex shrink-0 cursor-grab items-center justify-center rounded-lg text-sm transition-all active:cursor-grabbing hover:text-muted-foreground ${
+        <div
+          className={`flex shrink-0 cursor-pointer items-center justify-center rounded-lg text-sm transition-all hover:text-muted-foreground ${
             isActive ? "text-foreground" : "text-muted-foreground/80"
           }`}
-          type="button"
+          role="button"
           aria-label={profile.name}
-          aria-roledescription="sortable"
-          onClick={onClick}
-          data-state="closed"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true" className="size-5">
             <path strokeLinecap="round" strokeLinejoin="round" d={profile.icon} />
           </svg>
-        </button>
+        </div>
       </Tooltip>
     </div>
   );
@@ -731,6 +743,10 @@ function SidebarFooter({ activeProfileId, onChangeProfile }: { activeProfileId: 
     setShowCreate(false);
   };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -857,7 +873,7 @@ function SidebarFooter({ activeProfileId, onChangeProfile }: { activeProfileId: 
 
           {/* Sortable profile icons with dnd-kit */}
           <div className="relative flex flex-1 items-center justify-center overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToHorizontalAxis]}>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToHorizontalAxis]}>
               <SortableContext items={profiles.map(p => p.id)} strategy={horizontalListSortingStrategy}>
                 <div className="flex min-w-max items-center gap-2 px-1">
                   {profiles.map(profile => (
