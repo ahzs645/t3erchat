@@ -145,7 +145,7 @@ export function MainContent({
           </div>
 
           {/* Top-right buttons */}
-          <TopRightButtons tempChatMode={tempChatMode} onToggleTempChat={onToggleTempChat} />
+          <TopRightButtons tempChatMode={tempChatMode} onToggleTempChat={onToggleTempChat} showingChat={showChat} threadTitle={conversation?.title ?? ""} />
 
           {/* Content: Demo Chat or Welcome */}
           {showChat && conversation ? (

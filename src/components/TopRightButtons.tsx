@@ -1,14 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Tooltip } from "./Tooltip";
+import { ShareDialog } from "./ShareDialog";
 
 interface TopRightButtonsProps {
   tempChatMode?: boolean;
   onToggleTempChat?: () => void;
+  showingChat?: boolean;
+  threadTitle?: string;
 }
 
-export function TopRightButtons({ tempChatMode = false, onToggleTempChat }: TopRightButtonsProps) {
+export function TopRightButtons({ tempChatMode = false, onToggleTempChat, showingChat = false, threadTitle = "" }: TopRightButtonsProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "auto" | "dark">("dark");
   const [boringMode, setBoringMode] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -59,24 +63,38 @@ export function TopRightButtons({ tempChatMode = false, onToggleTempChat }: TopR
     >
       <div className="pointer-events-none absolute inset-0 left-auto -z-10 w-0 rounded-md bg-transparent backdrop-blur-xs transition-[background-color,width] delay-0 duration-250 max-sm:bg-sidebar/50 max-sm:delay-125 max-sm:duration-125 max-sm:w-19" />
       <div className="flex flex-row items-center text-muted-foreground gap-0.5 rounded-md p-1 transition-all rounded-bl-xl">
-        {/* Temporary chat button */}
-        <Tooltip content={tempChatMode ? "Disable temporary chat" : "Temporary chat"} side="bottom">
-          <button
-            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground z-0 size-8 transform-gpu transition-all duration-300 sm:ml-2 sm:rounded-bl-xl sm:bg-gradient-noise-top translate-x-0 opacity-100"
-            aria-label={tempChatMode ? "Disable temporary chat mode" : "Enable temporary chat mode"}
-            onClick={onToggleTempChat}
-          >
-            {tempChatMode ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock-check size-4 text-primary" aria-hidden="true">
-                <path d="M12 6v6l4 2" /><path d="M22 12a10 10 0 1 0-11 9.95" /><path d="m22 16-5.5 5.5L14 19" />
+        {/* Share button (when viewing a chat) or Temporary chat button (on welcome) */}
+        {showingChat ? (
+          <Tooltip content="Share thread" side="bottom">
+            <button
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground z-0 size-8 transform-gpu transition-all duration-300 sm:ml-2 sm:rounded-bl-xl sm:bg-gradient-noise-top translate-x-0 opacity-100"
+              aria-label="Share thread"
+              onClick={() => setShareDialogOpen(true)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-share size-4" aria-hidden="true">
+                <path d="M12 2v13" /><path d="m16 6-4-4-4 4" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
               </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock size-4" aria-hidden="true">
-                <path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" />
-              </svg>
-            )}
-          </button>
-        </Tooltip>
+            </button>
+          </Tooltip>
+        ) : (
+          <Tooltip content={tempChatMode ? "Disable temporary chat" : "Temporary chat"} side="bottom">
+            <button
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground z-0 size-8 transform-gpu transition-all duration-300 sm:ml-2 sm:rounded-bl-xl sm:bg-gradient-noise-top translate-x-0 opacity-100"
+              aria-label={tempChatMode ? "Disable temporary chat mode" : "Enable temporary chat mode"}
+              onClick={onToggleTempChat}
+            >
+              {tempChatMode ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock-check size-4 text-primary" aria-hidden="true">
+                  <path d="M12 6v6l4 2" /><path d="M22 12a10 10 0 1 0-11 9.95" /><path d="m22 16-5.5 5.5L14 19" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock size-4" aria-hidden="true">
+                  <path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" />
+                </svg>
+              )}
+            </button>
+          </Tooltip>
+        )}
 
         {/* Settings button */}
         <Tooltip content="Settings" side="bottom">
@@ -96,6 +114,13 @@ export function TopRightButtons({ tempChatMode = false, onToggleTempChat }: TopR
           </button>
         </Tooltip>
       </div>
+
+      {/* Share dialog */}
+      <ShareDialog
+        isOpen={shareDialogOpen}
+        onClose={() => setShareDialogOpen(false)}
+        threadTitle={threadTitle}
+      />
 
       {/* Settings dropdown menu — rendered via portal to avoid shifting buttons */}
       {settingsOpen && createPortal(

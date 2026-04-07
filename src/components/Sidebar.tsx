@@ -40,6 +40,7 @@ const SAMPLE_THREADS = [
 export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSelectThread, onNewChat }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set(["1"]));
+  const [pinnedCollapsed, setPinnedCollapsed] = useState(false);
   const [activeProfileId, setActiveProfileId] = useState("test");
   const activeId = activeThreadId ?? "";
 
@@ -237,16 +238,28 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSele
             ) : (
             <div className="animate-fade-in">
               <div className="relative mt-2 w-full">
-                {/* Pinned */}
+                {/* Pinned — collapsible */}
                 {pinnedThreads.length > 0 && (
                   <>
-                    <div data-sidebar="group-label" className="flex h-8 shrink-0 items-center rounded-md text-xs font-medium ring-sidebar-ring outline-hidden transition-[margin,opa] duration-200 ease-snappy select-none group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 px-3.5 py-2 pt-4 text-color-heading">
+                    <div data-sidebar="group-label" className="relative flex h-8 shrink-0 items-center rounded-md text-xs font-medium ring-sidebar-ring outline-hidden transition-[margin,opa] duration-200 ease-snappy select-none group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 px-3.5 py-2 pt-4 text-color-heading">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pin mt-px mr-1 -ml-0.5 size-3!" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
                       <span>Pinned</span>
+                      <button
+                        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground h-9 absolute! top-1/2 right-0 size-7! -translate-y-1/2 p-0"
+                        onClick={() => setPinnedCollapsed(!pinnedCollapsed)}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`lucide lucide-chevron-down size-3! transition-transform duration-200 ${pinnedCollapsed ? "" : "rotate-180"}`} aria-hidden="true">
+                          <path d="m6 9 6 6 6-6" />
+                        </svg>
+                      </button>
                     </div>
-                    {pinnedThreads.map(t => (
-                      <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => onSelectThread?.(t.id)} />
-                    ))}
+                    <div className="grid transition-[grid-template-rows] duration-200 ease-out" style={{ gridTemplateRows: pinnedCollapsed ? "0fr" : "1fr" }}>
+                      <div className="overflow-hidden">
+                        {pinnedThreads.map(t => (
+                          <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => onSelectThread?.(t.id)} />
+                        ))}
+                      </div>
+                    </div>
                   </>
                 )}
 
@@ -674,6 +687,40 @@ function SidebarFooter({ activeProfileId, onChangeProfile }: { activeProfileId: 
   const [newName, setNewName] = useState("");
   const [selectedIcon, setSelectedIcon] = useState(ICON_OPTIONS[2].path); // Bookmark default
   const iconButtonRef = useRef<HTMLButtonElement>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const avatarBtnRef = useRef<HTMLButtonElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState<{ bottom: number; left: number } | null>(null);
+
+  // Position the user menu above the avatar button
+  useEffect(() => {
+    if (userMenuOpen && avatarBtnRef.current) {
+      const rect = avatarBtnRef.current.getBoundingClientRect();
+      setMenuPos({ bottom: window.innerHeight - rect.top + 4, left: rect.left });
+    }
+  }, [userMenuOpen]);
+
+  // Close on outside click or Escape
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        userMenuRef.current && !userMenuRef.current.contains(e.target as Node) &&
+        avatarBtnRef.current && !avatarBtnRef.current.contains(e.target as Node)
+      ) {
+        setUserMenuOpen(false);
+      }
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setUserMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [userMenuOpen]);
   const createProfile = () => {
     if (!newName.trim()) return;
     const id = newName.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
@@ -737,12 +784,76 @@ function SidebarFooter({ activeProfileId, onChangeProfile }: { activeProfileId: 
         <div className={`flex items-center px-2 py-1.5 transition-colors duration-200 ease-out ${showCreate ? "rounded-b-xl bg-muted/30" : ""}`}>
           {/* Avatar */}
           <Tooltip content="User menu" side="right">
-            <button aria-label="User menu" className="mr-2 shrink-0 cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring" type="button" data-state="closed">
+            <button
+              ref={avatarBtnRef}
+              aria-label="User menu"
+              className="mr-2 shrink-0 cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              type="button"
+              data-state={userMenuOpen ? "open" : "closed"}
+              onClick={() => setUserMenuOpen(v => !v)}
+            >
               <span data-slot="avatar" className="relative flex shrink-0 overflow-hidden rounded-full size-8 ring-2 ring-primary">
                 <div className="aspect-square size-full flex items-center justify-center bg-primary/30 text-xs font-bold text-primary-foreground">AJ</div>
               </span>
             </button>
           </Tooltip>
+
+          {/* User profile dropdown menu (portal) */}
+          {userMenuOpen && menuPos && createPortal(
+            <div
+              ref={userMenuRef}
+              role="menu"
+              className="z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-32 overflow-x-hidden overflow-y-auto rounded-md bg-popover p-1 text-popover-foreground shadow-md outline-1! outline-chat-border/20! outline-solid! dark:outline-white/5! data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[side=top]:slide-in-from-bottom-2 transform-origin w-48"
+              data-state="open"
+              data-side="top"
+              style={{ position: "fixed", bottom: menuPos.bottom, left: menuPos.left }}
+            >
+              {/* Header */}
+              <div className="flex items-center gap-2 px-2 py-1.5">
+                <span className="text-sm font-medium">Ahmad Jalil</span>
+                <span className="rounded-full bg-pink-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-pink-400">Pro</span>
+              </div>
+              <div className="-mx-1 my-1 h-px bg-border" role="separator" />
+              {/* Settings */}
+              <a
+                role="menuitem"
+                className="relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors select-none hover:bg-accent/30 hover:text-accent-foreground focus:bg-accent/30 focus:text-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-settings" aria-hidden="true">
+                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                Settings
+              </a>
+              {/* Feedback */}
+              <a
+                role="menuitem"
+                className="relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors select-none hover:bg-accent/30 hover:text-accent-foreground focus:bg-accent/30 focus:text-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-square" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Feedback
+              </a>
+              <div className="-mx-1 my-1 h-px bg-border" role="separator" />
+              {/* Sign out */}
+              <a
+                role="menuitem"
+                className="relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors select-none hover:bg-red-500/10 hover:text-red-400 focus:bg-red-500/10 focus:text-red-400 [&>svg]:size-4 [&>svg]:shrink-0"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-log-out" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" x2="9" y1="12" y2="12" />
+                </svg>
+                Sign out
+              </a>
+            </div>,
+            document.body
+          )}
 
           {/* Sortable profile icons with dnd-kit */}
           <div className="relative flex flex-1 items-center justify-center overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
