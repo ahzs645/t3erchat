@@ -9,7 +9,7 @@ interface TooltipProps {
   sideOffset?: number;
 }
 
-export function Tooltip({ children, content, side = "bottom", delayMs = 300, sideOffset = 8 }: TooltipProps) {
+export function Tooltip({ children, content, side = "bottom", delayMs = 300, sideOffset = 4 }: TooltipProps) {
   const [visible, setVisible] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const triggerRef = useRef<HTMLSpanElement>(null);
@@ -18,7 +18,6 @@ export function Tooltip({ children, content, side = "bottom", delayMs = 300, sid
   const show = useCallback(() => {
     timerRef.current = setTimeout(() => {
       if (!triggerRef.current) return;
-      // Measure the first child element if possible, otherwise the span
       const el = triggerRef.current.firstElementChild as HTMLElement || triggerRef.current;
       const rect = el.getBoundingClientRect();
       let x: number, y: number;
@@ -50,13 +49,6 @@ export function Tooltip({ children, content, side = "bottom", delayMs = 300, sid
     setVisible(false);
   }, []);
 
-  const slideClass = {
-    top: "data-[side=top]:slide-in-from-bottom-1",
-    bottom: "data-[side=bottom]:slide-in-from-top-1",
-    left: "data-[side=left]:slide-in-from-right-1",
-    right: "data-[side=right]:slide-in-from-left-1",
-  }[side];
-
   const transform = {
     top: "translate(-50%, -100%)",
     bottom: "translate(-50%, 0)",
@@ -80,7 +72,7 @@ export function Tooltip({ children, content, side = "bottom", delayMs = 300, sid
           role="tooltip"
           data-state="delayed-open"
           data-side={side}
-          className={`z-[9999] overflow-hidden rounded-md bg-primary px-2 py-1 text-[11px] leading-none font-medium text-primary-foreground animate-in fade-in-0 zoom-in-95 pointer-events-none whitespace-nowrap ${slideClass}`}
+          className="z-[9999] overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md pointer-events-none whitespace-nowrap animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2"
           style={{
             position: "fixed",
             left: pos.x,

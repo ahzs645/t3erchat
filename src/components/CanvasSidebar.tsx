@@ -79,9 +79,9 @@ export function CanvasSidebar({ isOpen, onToggle, onGoToChat }: CanvasSidebarPro
                   onClick={onGoToChat}
                   className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground size-8"
                 >
-                  {/* Chat bubble icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-square size-5">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  {/* Chat bubble icon (filled) */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" className="size-5">
+                    <path fillRule="evenodd" d="M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.202 41.202 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.202 41.202 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902Z" clipRule="evenodd" />
                   </svg>
                 </button>
               </Tooltip>
@@ -91,7 +91,7 @@ export function CanvasSidebar({ isOpen, onToggle, onGoToChat }: CanvasSidebarPro
           {/* Scrollable content */}
           <div
             data-sidebar="content"
-            className="flex min-h-0 flex-1 flex-col gap-4 overflow-auto group-data-[collapsible=icon]:overflow-hidden small-scrollbar scroll-shadow-mask relative overflow-x-hidden px-3 py-3"
+            className="flex flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden small-scrollbar scroll-shadow-mask relative min-h-0 flex-1 space-y-3 overflow-x-hidden overflow-y-auto p-2 pb-2"
             data-shadow="bottom"
           >
             {/* Prompt Section */}
@@ -113,24 +113,6 @@ export function CanvasSidebar({ isOpen, onToggle, onGoToChat }: CanvasSidebarPro
                 onChange={(e) => setPrompt(e.target.value)}
                 rows={3}
               />
-            </div>
-
-            {/* References Section */}
-            <div>
-              <label className="mb-1.5 flex items-center gap-2 text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-                {/* Image icon */}
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-image">
-                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                </svg>
-                References
-              </label>
-              <button className="flex h-16 w-full items-center justify-center rounded-lg border border-dashed border-chat-border bg-muted/10 text-muted-foreground/50 transition-colors hover:border-chat-border/80 hover:bg-muted/20 hover:text-muted-foreground/70">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus">
-                  <path d="M5 12h14" /><path d="M12 5v14" />
-                </svg>
-              </button>
             </div>
 
             {/* Models Section */}

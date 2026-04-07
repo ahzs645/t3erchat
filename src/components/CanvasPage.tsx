@@ -32,7 +32,7 @@ export function CanvasPage({ sidebarOpen }: CanvasPageProps) {
         {/* Scroll container */}
         <div
           id="canvas-scroll-container"
-          className={`absolute inset-0 overflow-y-scroll transition-[padding] ease-snappy ${sidebarOpen ? "pt-8 sm:pt-3.5" : "pt-2 sm:pt-0"}`}
+          className="h-full overflow-y-auto sm:pt-3.5"
           style={{ scrollbarGutter: "stable both-edges" }}
         >
           {/* Top-right corner (for scroll container) */}
@@ -47,7 +47,7 @@ export function CanvasPage({ sidebarOpen }: CanvasPageProps) {
           <CanvasTopRightButtons />
 
           {/* Canvas grid */}
-          <div className="animate-fade-in px-2 pt-2">
+          <div className="relative p-6 transition-[padding] duration-200">
             <CanvasGrid />
           </div>
         </div>
@@ -69,8 +69,8 @@ function CanvasTopRightButtons() {
             className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground z-0 size-8 transform-gpu transition-all duration-300 sm:ml-2 sm:rounded-bl-xl sm:bg-gradient-noise-top translate-x-0 opacity-100"
             aria-label="Toggle timeline view"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock size-4" aria-hidden="true">
-              <path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-list size-4" aria-hidden="true">
+              <line x1="8" x2="21" y1="6" y2="6" /><line x1="8" x2="21" y1="12" y2="12" /><line x1="8" x2="21" y1="18" y2="18" /><line x1="3" x2="3.01" y1="6" y2="6" /><line x1="3" x2="3.01" y1="12" y2="12" /><line x1="3" x2="3.01" y1="18" y2="18" />
             </svg>
           </button>
         </Tooltip>

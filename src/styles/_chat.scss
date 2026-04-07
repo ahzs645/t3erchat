@@ -239,6 +239,10 @@
   container-type: inline-size;
 }
 
+.canvas-preview-card:hover .canvas-preview-quick-actions {
+  opacity: 1;
+}
+
 @container (width <= 149px) {
   .canvas-preview-quick-actions {
     display: none !important;

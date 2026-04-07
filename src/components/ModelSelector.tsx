@@ -688,6 +688,7 @@ export function ModelSelector({
   const [activeFeatureFilters, setActiveFeatureFilters] = useState<Set<string>>(new Set());
   const [showCombinedResults, setShowCombinedResults] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
+  const [showLegacy, setShowLegacy] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const filterMenuRef = useRef<HTMLDivElement>(null);
@@ -1006,8 +1007,12 @@ export function ModelSelector({
                       </div>
                     </div>
                   </div>
-                  {/* Bottom gradient fade */}
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-16 flex-col items-center justify-end bg-gradient-to-t from-sidebar-accent/90 to-transparent pb-1.5 transition-opacity duration-150 opacity-0" />
+                  {/* Bottom gradient fade with bouncing arrow */}
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 flex h-16 flex-col items-center justify-end bg-gradient-to-t from-sidebar-accent/90 to-transparent pb-1.5 transition-opacity duration-150 opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down size-4 animate-bounce text-muted-foreground" aria-hidden="true">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </div>
                 </div>
 
                 {/* Model list */}
@@ -1020,20 +1025,67 @@ export function ModelSelector({
                           : "No models found."}
                       </div>
                     ) : (
-                      filteredModels.map((model) => (
-                        <ModelItem
-                          key={model.id}
-                          model={model}
-                          isSelected={selectedModel.id === model.id}
-                          isFavorited={favorites.has(model.id)}
-                          showProviderIcon={activeProvider === "favorites"}
-                          onSelect={() => handleSelectModel(model)}
-                          onToggleFavorite={(e) =>
-                            handleToggleFavorite(model.id, e)
-                          }
-                          isRetired={model.retired}
-                        />
-                      ))
+                      <>
+                        {/* Current models */}
+                        <div className="space-y-0.5">
+                          {filteredModels.filter(m => !m.legacy).map((model) => (
+                            <ModelItem
+                              key={model.id}
+                              model={model}
+                              isSelected={selectedModel.id === model.id}
+                              isFavorited={favorites.has(model.id)}
+                              showProviderIcon={activeProvider === "favorites"}
+                              onSelect={() => handleSelectModel(model)}
+                              onToggleFavorite={(e) =>
+                                handleToggleFavorite(model.id, e)
+                              }
+                              isRetired={model.retired}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Legacy models collapsible */}
+                        {(() => {
+                          const legacyModels = filteredModels.filter(m => m.legacy);
+                          if (legacyModels.length === 0) return null;
+                          return (
+                            <>
+                              <button
+                                data-model-item="true"
+                                data-legacy-button="true"
+                                className="mt-1 flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-left text-xs text-muted-foreground/80 transition-colors ease-snappy hover:bg-sidebar-accent/50 hover:text-muted-foreground hover:duration-0 focus-visible:bg-sidebar-accent/40 focus-visible:ring-2 focus-visible:ring-primary/50"
+                                onClick={() => setShowLegacy(!showLegacy)}
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-archive size-4" aria-hidden="true">
+                                  <rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" />
+                                </svg>
+                                <span>{legacyModels.length} legacy model{legacyModels.length !== 1 ? "s" : ""}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`lucide lucide-chevron-down ml-auto size-4 text-muted-foreground/60 transition-transform duration-200 ${showLegacy ? "rotate-180" : ""}`} aria-hidden="true">
+                                  <path d="m6 9 6 6 6-6" />
+                                </svg>
+                              </button>
+                              {showLegacy && (
+                                <div className="space-y-0.5 mt-1">
+                                  {legacyModels.map((model) => (
+                                    <ModelItem
+                                      key={model.id}
+                                      model={model}
+                                      isSelected={selectedModel.id === model.id}
+                                      isFavorited={favorites.has(model.id)}
+                                      showProviderIcon={activeProvider === "favorites"}
+                                      onSelect={() => handleSelectModel(model)}
+                                      onToggleFavorite={(e) =>
+                                        handleToggleFavorite(model.id, e)
+                                      }
+                                      isRetired={model.retired}
+                                    />
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </>
                     )}
                   </div>
                 </div>

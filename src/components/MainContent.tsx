@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChatInputForm } from "./ChatInputForm";
 import { TopRightButtons } from "./TopRightButtons";
 import { CornerDecoration } from "./CornerDecoration";
+import { DemoChat } from "./DemoChat";
 import type { Model } from "../data/models";
 
 interface MainContentProps {
@@ -19,6 +20,8 @@ export function MainContent({
   isModelSelectorOpen,
   sidebarOpen = true,
 }: MainContentProps) {
+  const [showDemoChat, setShowDemoChat] = useState(true);
+
   return (
     <main className="firefox-scrollbar-margin-fix min-h-pwa relative flex w-full flex-1 flex-col overflow-y-clip transition-[width,height] print:absolute print:top-0 print:left-0 print:h-auto print:min-h-auto print:overflow-visible">
       {/* Background panel with noise — slides up when sidebar closed */}
@@ -75,98 +78,111 @@ export function MainContent({
           {/* Top-right buttons */}
           <TopRightButtons />
 
-          {/* Welcome content */}
-          <div className="animate-fade-in">
-            <div
-              role="log"
-              aria-label="Chat messages"
-              aria-live="polite"
-              className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10 pb-10 print:space-y-0 print:pt-0"
-            >
-              <div className="flex h-[calc(100vh-20rem)] items-start justify-center">
-                <div
-                  className="w-full space-y-6 px-2 pt-[calc(max(15vh,2.5rem))] sm:px-8"
-                  style={{ opacity: 1, transform: "none" }}
-                >
-                  <h2 className="text-3xl font-semibold">
-                    <span className="grid">
-                      <span
-                        className="invisible col-start-1 row-start-1"
-                        aria-hidden="true"
-                      >
-                        <span className="inline-flex items-baseline gap-2">
-                          <span className="inline-flex size-7 shrink-0 items-center justify-center self-baseline">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="lucide lucide-clock-check relative top-1 size-7 text-foreground"
-                              aria-hidden="true"
-                            >
-                              <path d="M12 6v6l4 2" />
-                              <path d="M22 12a10 10 0 1 0-11 9.95" />
-                              <path d="m22 16-5.5 5.5L14 19" />
-                            </svg>
+          {/* Content: Demo Chat or Welcome */}
+          {showDemoChat ? (
+            <div className="animate-fade-in">
+              <div
+                role="log"
+                aria-label="Chat messages"
+                aria-live="polite"
+                className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10 pb-10"
+              >
+                <DemoChat />
+              </div>
+            </div>
+          ) : (
+            <div className="animate-fade-in">
+              <div
+                role="log"
+                aria-label="Chat messages"
+                aria-live="polite"
+                className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10 pb-10 print:space-y-0 print:pt-0"
+              >
+                <div className="flex h-[calc(100vh-20rem)] items-start justify-center">
+                  <div
+                    className="w-full space-y-6 px-2 pt-[calc(max(15vh,2.5rem))] sm:px-8"
+                    style={{ opacity: 1, transform: "none" }}
+                  >
+                    <h2 className="text-3xl font-semibold">
+                      <span className="grid">
+                        <span
+                          className="invisible col-start-1 row-start-1"
+                          aria-hidden="true"
+                        >
+                          <span className="inline-flex items-baseline gap-2">
+                            <span className="inline-flex size-7 shrink-0 items-center justify-center self-baseline">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-clock-check relative top-1 size-7 text-foreground"
+                                aria-hidden="true"
+                              >
+                                <path d="M12 6v6l4 2" />
+                                <path d="M22 12a10 10 0 1 0-11 9.95" />
+                                <path d="m22 16-5.5 5.5L14 19" />
+                              </svg>
+                            </span>
+                            <span>Temporary chat</span>
                           </span>
-                          <span>Temporary chat</span>
+                        </span>
+                        <span
+                          className="col-start-1 row-start-1"
+                          aria-hidden="false"
+                        >
+                          How can I help you today?
                         </span>
                       </span>
-                      <span
-                        className="col-start-1 row-start-1"
-                        aria-hidden="false"
-                      >
-                        How can I help you today?
-                      </span>
-                    </span>
-                  </h2>
+                    </h2>
 
-                  {/* Category buttons */}
-                  <div className="flex flex-row flex-wrap gap-2.5 text-sm max-sm:justify-evenly">
-                    {[
-                      { icon: "sparkles", label: "Create" },
-                      { icon: "newspaper", label: "Explore" },
-                      { icon: "code", label: "Code" },
-                      { icon: "graduation-cap", label: "Learn" },
-                    ].map((item) => (
-                      <button
-                        key={item.label}
-                        className="cursor-pointer justify-center text-sm whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 disabled:hover:bg-primary h-9 flex items-center gap-1 rounded-xl px-5 py-2 font-semibold outline-1 outline-secondary/70 backdrop-blur-xl data-[selected=false]:bg-secondary/30 data-[selected=false]:text-secondary-foreground/90 data-[selected=false]:outline-solid data-[selected=false]:hover:bg-secondary max-sm:size-16 max-sm:flex-col sm:gap-2 sm:rounded-full"
-                        data-selected="false"
-                      >
-                        <CategoryIcon name={item.icon} />
-                        <div>{item.label}</div>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Sample questions */}
-                  <div className="flex flex-col text-foreground">
-                    {[
-                      "How does AI work?",
-                      "Are black holes real?",
-                      'How many Rs are in the word "strawberry"?',
-                      "What is the meaning of life?",
-                    ].map((q) => (
-                      <div
-                        key={q}
-                        className="flex items-start gap-2 border-t border-secondary/40 py-1 first:border-none"
-                      >
-                        <button className="w-full rounded-md py-2 text-left text-secondary-foreground hover:bg-secondary/50 sm:px-3">
-                          <span>{q}</span>
+                    {/* Category buttons */}
+                    <div className="flex flex-row flex-wrap gap-2.5 text-sm max-sm:justify-evenly">
+                      {[
+                        { icon: "sparkles", label: "Create" },
+                        { icon: "newspaper", label: "Explore" },
+                        { icon: "code", label: "Code" },
+                        { icon: "graduation-cap", label: "Learn" },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          className="cursor-pointer justify-center text-sm whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 disabled:hover:bg-primary h-9 flex items-center gap-1 rounded-xl px-5 py-2 font-semibold outline-1 outline-secondary/70 backdrop-blur-xl data-[selected=false]:bg-secondary/30 data-[selected=false]:text-secondary-foreground/90 data-[selected=false]:outline-solid data-[selected=false]:hover:bg-secondary max-sm:size-16 max-sm:flex-col sm:gap-2 sm:rounded-full"
+                          data-selected="false"
+                        >
+                          <CategoryIcon name={item.icon} />
+                          <div>{item.label}</div>
                         </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+
+                    {/* Sample questions */}
+                    <div className="flex flex-col text-foreground">
+                      {[
+                        "How does AI work?",
+                        "Are black holes real?",
+                        'How many Rs are in the word "strawberry"?',
+                        "What is the meaning of life?",
+                      ].map((q) => (
+                        <div
+                          key={q}
+                          className="flex items-start gap-2 border-t border-secondary/40 py-1 first:border-none"
+                        >
+                          <button className="w-full rounded-md py-2 text-left text-secondary-foreground hover:bg-secondary/50 sm:px-3">
+                            <span>{q}</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </main>
