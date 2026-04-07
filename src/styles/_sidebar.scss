@@ -1,0 +1,47 @@
+// ==========================================================================
+// Sidebar -- Menu items, thread list, collapsible states
+// Extracted from t3.chat compiled Tailwind CSS v4.1.17
+// ==========================================================================
+
+// ---------------------------------------------------------------------------
+// Sidebar accent hover (via data-state="open")
+// ---------------------------------------------------------------------------
+[data-state="open"]:hover {
+  &.bg-sidebar-accent {
+    background-color: var(--sidebar-accent);
+  }
+
+  &.text-sidebar-accent-foreground {
+    color: var(--sidebar-accent-foreground);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Scrollbar styles for sidebar
+// ---------------------------------------------------------------------------
+.small-scrollbar::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+.small-scrollbar[data-scrolling="true"]::-webkit-scrollbar-thumb {
+  background: hsl(from var(--muted-foreground) h s l / 0.4);
+}
+
+.dark .small-scrollbar[data-scrolling="true"]::-webkit-scrollbar-thumb {
+  background: hsl(from var(--muted-foreground) h s l / 0.2);
+}
+
+.small-scrollbar::-webkit-scrollbar-thumb {
+  background: 0 0;
+  -webkit-background-clip: content-box;
+  background-clip: content-box;
+  border: 1.5px solid #0000;
+  border-radius: 4px;
+  transition: background 0.2s ease-in-out;
+}
+
+.small-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(from var(--muted-foreground) h s l / 0.5);
+  border: 1px solid #0000;
+}

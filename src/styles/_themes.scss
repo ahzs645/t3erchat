@@ -1,0 +1,485 @@
+// ==========================================================================
+// Theme Definitions
+// Extracted from t3.chat compiled Tailwind CSS v4.1.17
+// ==========================================================================
+
+// ---------------------------------------------------------------------------
+// theme-default -- Light mode
+// ---------------------------------------------------------------------------
+.theme-default {
+  --background: #f2e1f4;
+  --foreground: #501854;
+  --card: #faf3fb;
+  --card-foreground: #454554;
+  --popover: #fff;
+  --popover-foreground: #501854;
+  --primary: #e33f86;
+  --primary-foreground: #fff;
+  --secondary: #f1c4e6;
+  --secondary-foreground: #77347c;
+  --muted: #eaa7cb;
+  --muted-foreground: #ac1668;
+  --accent: #f1c4e6;
+  --accent-foreground: #454554;
+  --destructive: #f7086c;
+  --destructive-foreground: #fff;
+  --info: var(--color-blue-500);
+  --info-foreground: var(--color-blue-700);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-700);
+  --warning: var(--color-amber-500);
+  --warning-foreground: var(--color-amber-700);
+  --border: #eee1ed;
+  --input: #e7c1dc;
+  --ring: #db2777;
+
+  // Charts
+  --chart-1: #e76e50;
+  --chart-2: #2a9d90;
+  --chart-3: #274754;
+  --chart-4: #e8c468;
+  --chart-5: #f4a462;
+
+  // Sidebar
+  --sidebar-background: #ead0ef;
+  --sidebar-foreground: #454554;
+  --sidebar-primary: #454554;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #f8f8f7;
+  --sidebar-accent-foreground: #454554;
+  --sidebar-border: #eceae9;
+  --sidebar-ring: #db2777;
+
+  // Gradient / noise
+  --gradient-noise-top: #f3e6f5;
+  --color-heading: #560f2b;
+
+  // Chat
+  --chat-border: #efbdeb;
+  --chat-background: #fdf7fd;
+  --chat-accent: #f5ecf9;
+  --chat-overlay: hsla(309, 63%, 92%, var(--blur-fallback, 0.72));
+  --chat-input-gradient: #fbccff;
+  --chat-input-background: hsla(270, 0%, 100%, var(--blur-fallback, 0.1));
+  --wordmark-color: #ca0277;
+
+  // Canvas
+  --canvas-bg: oklab(98.245% 0.00835 -0.00582);
+  --canvas-border: #efbdeb;
+  --canvas-border-hover: oklch(100% 0 0 / 0.14);
+  --canvas-text: #501854;
+  --canvas-text-muted: #ac1668;
+  --canvas-accent: #f5ecf9;
+  --canvas-accent-glow: oklch(70% 0.18 340 / 0.25);
+  --canvas-sidebar: #ead0ef;
+}
+
+// Prose overrides for theme-default (light)
+.theme-default .prose.prose-pink {
+  --tw-prose-td-borders: #eadef7;
+  --tw-prose-th-borders: #d8c3ef;
+  --tw-prose-pre-bg: #563271;
+  --tw-prose-pre-code: #f2ebfa;
+  --tw-prose-code: #492c61;
+  --tw-prose-captions: #7b44ab;
+  --tw-prose-quote-borders: #c4739d;
+  --tw-prose-quotes: #492c61;
+  --tw-prose-hr: #d8c3ef;
+  --tw-prose-bullets: #c4739d;
+  --tw-prose-counters: #c4739d;
+  --tw-prose-bold: #492c61;
+  --tw-prose-lead: #7b44ab;
+  --tw-prose-headings: #563271;
+  --tw-prose-body: #492c61;
+  --tw-prose-links: #da006b;
+  --tw-prose-kbd-shadows: #501854;
+  --tw-prose-kbd: #111827;
+}
+
+// ---------------------------------------------------------------------------
+// theme-default -- Dark mode
+// ---------------------------------------------------------------------------
+@media screen {
+  .theme-default:where(.dark, .dark *) {
+    --background: #21141e;
+    --foreground: #f9f8fb;
+    --card: #0b080b;
+    --card-foreground: #f4f4f5;
+    --popover: #100a0e;
+    --popover-foreground: #f8f1f5;
+    --primary: #a3004c;
+    --primary-foreground: #fbd0e8;
+    --secondary: #362d3d;
+    --secondary-foreground: #d4c7e1;
+    --muted: #423a45;
+    --muted-foreground: #e7d0dd;
+    --accent: #463753;
+    --accent-foreground: #f8f1f5;
+    --destructive: #9d174d;
+    --destructive-foreground: #fff;
+    --info: var(--color-blue-500);
+    --info-foreground: var(--color-blue-400);
+    --success: var(--color-emerald-500);
+    --success-foreground: var(--color-emerald-400);
+    --warning: var(--color-amber-500);
+    --warning-foreground: var(--color-amber-400);
+    --border: #27242c;
+    --input: #302029;
+    --ring: #db2777;
+
+    --chart-1: #2662d9;
+    --chart-2: #2eb88a;
+    --chart-3: #e88c30;
+    --chart-4: #af57db;
+    --chart-5: #e23670;
+
+    --sidebar-background: #131314;
+    --sidebar-foreground: #f4f4f5;
+    --sidebar-primary: #1d4ed8;
+    --sidebar-primary-foreground: #fff;
+    --sidebar-accent: #261922;
+    --sidebar-accent-foreground: #f4f4f5;
+    --sidebar-border: #000;
+    --sidebar-ring: #db2777;
+
+    --gradient-noise-top: #1a1419;
+    --color-heading: #c46095;
+
+    --chat-border: #322028;
+    --chat-background: #1f1a24;
+    --chat-accent: #1a151edb;
+    --chat-overlay: hsla(270, 12%, 16%, var(--blur-fallback, 0.71));
+    --chat-input-gradient: #432d48;
+    --chat-input-background: hsla(270, 10%, 20%, var(--blur-fallback, 0.4));
+    --wordmark-color: #e3bad1;
+
+    --model-selector-gradient: linear-gradient(
+      #1a141e 0%,
+      #120e14 40%,
+      #070309
+    );
+
+    --canvas-bg: oklch(13% 0.004 285);
+    --canvas-border: oklch(100% 0 0 / 0.08);
+    --canvas-border-hover: oklch(100% 0 0 / 0.14);
+    --canvas-text: oklch(93% 0.01 285);
+    --canvas-text-muted: oklch(55% 0.01 285);
+    --canvas-accent: oklch(70% 0.18 340);
+    --canvas-accent-glow: oklch(70% 0.18 340 / 0.25);
+    --canvas-sidebar: oklch(10% 0.004 285);
+  }
+
+  .theme-default:where(.dark, .dark *) .prose.prose-pink {
+    --tw-prose-td-borders: #463854;
+    --tw-prose-th-borders: #6d5d7f;
+    --tw-prose-pre-bg: #00000080;
+    --tw-prose-pre-code: #d8c3ef;
+    --tw-prose-code: #fff;
+    --tw-prose-kbd-shadows: #f9f8fb;
+    --tw-prose-kbd: #fff;
+    --tw-prose-captions: #bf9be4;
+    --tw-prose-quote-borders: #dc749e;
+    --tw-prose-quotes: #f2ebfa;
+    --tw-prose-hr: #dc749e;
+    --tw-prose-bullets: #dc749e;
+    --tw-prose-counters: #dc749e;
+    --tw-prose-bold: #f2ebfa;
+    --tw-prose-links: #f472b6;
+    --tw-prose-lead: #d8c3ef;
+    --tw-prose-headings: #faf7fd;
+    --tw-prose-body: #f2ebfa;
+  }
+}
+
+// ===========================================================================
+// theme-boring -- Light mode
+// ===========================================================================
+.theme-boring {
+  --background: #ebebeb;
+  --foreground: #363636;
+  --card: #f7f7f7;
+  --card-foreground: #4d4d4d;
+  --popover: #fff;
+  --popover-foreground: #363636;
+  --primary: #ad5273;
+  --primary-foreground: #fff;
+  --secondary: #dbdbdb;
+  --secondary-foreground: #585858;
+  --muted: #c9c9c9;
+  --muted-foreground: #616161;
+  --accent: #dbdbdb;
+  --accent-foreground: #4d4d4d;
+  --destructive: gray;
+  --destructive-foreground: #fff;
+  --info: var(--color-blue-500);
+  --info-foreground: var(--color-blue-700);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-700);
+  --warning: var(--color-amber-500);
+  --warning-foreground: var(--color-amber-700);
+  --border: #e8e8e8;
+  --input: #d4d4d4;
+  --ring: #818181;
+
+  --chart-1: #e76e50;
+  --chart-2: #2a9d90;
+  --chart-3: #274754;
+  --chart-4: #e8c468;
+  --chart-5: #f4a462;
+
+  --sidebar-background: #dfdfdf;
+  --sidebar-foreground: #4d4d4d;
+  --sidebar-primary: #4d4d4d;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #f7f7f7;
+  --sidebar-accent-foreground: #4d4d4d;
+  --sidebar-border: #ebebeb;
+  --sidebar-ring: #818181;
+
+  --gradient-noise-top: #ededed;
+  --color-heading: #323232;
+
+  --chat-border: #d6d6d6;
+  --chat-background: #fafafa;
+  --chat-accent: #f3f3f3;
+  --chat-overlay: hsla(309, 0%, 92%, var(--blur-fallback, 0.72));
+  --chat-input-gradient: #e6e6e6;
+  --chat-input-background: hsla(270, 0%, 100%, var(--blur-fallback, 0.1));
+  --wordmark-color: #666;
+}
+
+.theme-boring .prose.prose-pink {
+  --tw-prose-td-borders: #ebebeb;
+  --tw-prose-th-borders: #d9d9d9;
+  --tw-prose-pre-bg: #525252;
+  --tw-prose-pre-code: #f3f3f3;
+  --tw-prose-code: #464646;
+  --tw-prose-captions: #787878;
+  --tw-prose-quote-borders: #9c9c9c;
+  --tw-prose-quotes: #464646;
+  --tw-prose-hr: #d9d9d9;
+  --tw-prose-bullets: #9c9c9c;
+  --tw-prose-counters: #9c9c9c;
+  --tw-prose-bold: #464646;
+  --tw-prose-lead: #787878;
+  --tw-prose-headings: #525252;
+  --tw-prose-body: #464646;
+  --tw-prose-invert-kbd-shadows: #363636;
+  --tw-prose-invert-kbd: #fff;
+  --tw-prose-kbd-shadows: #363636;
+  --tw-prose-kbd: #1c1c1c;
+}
+
+// ---------------------------------------------------------------------------
+// theme-boring -- Dark mode
+// ---------------------------------------------------------------------------
+@media screen {
+  .theme-boring:where(.dark, .dark *) {
+    --background: #151515;
+    --foreground: #f9f9f9;
+    --card: #090909;
+    --card-foreground: #f5f5f5;
+    --popover: #0d0d0d;
+    --popover-foreground: #f5f5f5;
+    --primary: #763750;
+    --primary-foreground: #e6e6e6;
+    --secondary: #353535;
+    --secondary-foreground: #d4d4d4;
+    --muted: #404040;
+    --muted-foreground: #b0b0b0;
+    --accent: #454545;
+    --accent-foreground: #f5f5f5;
+    --destructive: #5a5a5a;
+    --destructive-foreground: #fff;
+    --info: var(--color-blue-500);
+    --info-foreground: var(--color-blue-400);
+    --success: var(--color-emerald-500);
+    --success-foreground: var(--color-emerald-400);
+    --warning: var(--color-amber-500);
+    --warning-foreground: var(--color-amber-400);
+    --border: #282828;
+    --input: #282828;
+    --ring: #818181;
+
+    --chart-1: #2662d9;
+    --chart-2: #2eb88a;
+    --chart-3: #e88c30;
+    --chart-4: #af57db;
+    --chart-5: #e23670;
+
+    --sidebar-background: #131313;
+    --sidebar-foreground: #f5f5f5;
+    --sidebar-primary: #7a7a7a;
+    --sidebar-primary-foreground: #fff;
+    --sidebar-accent: #202020;
+    --sidebar-accent-foreground: #f5f5f5;
+    --sidebar-border: #000;
+    --sidebar-ring: #818181;
+
+    --gradient-noise-top: #151515;
+    --color-heading: #7f7f7f;
+
+    --chat-border: #2b2b2b;
+    --chat-background: #1f1f1f;
+    --chat-accent: #1a1a1adb;
+    --chat-overlay: hsla(270, 0%, 16%, var(--blur-fallback, 0.71));
+    --chat-input-gradient: #363636;
+    --chat-input-background: hsla(270, 0%, 20%, var(--blur-fallback, 0.4));
+    --wordmark-color: #cfcfcf;
+    --model-selector-gradient: var(--background);
+  }
+
+  .theme-boring:where(.dark, .dark *) .prose.prose-pink {
+    --tw-prose-td-borders: #464646;
+    --tw-prose-th-borders: #6e6e6e;
+    --tw-prose-pre-bg: #00000080;
+    --tw-prose-pre-code: #d9d9d9;
+    --tw-prose-code: #fff;
+    --tw-prose-kbd-shadows: #f9f9f9;
+    --tw-prose-kbd: #fff;
+    --tw-prose-captions: silver;
+    --tw-prose-quote-borders: #a8a8a8;
+    --tw-prose-quotes: #f3f3f3;
+    --tw-prose-hr: #a8a8a8;
+    --tw-prose-bullets: #a8a8a8;
+    --tw-prose-counters: #a8a8a8;
+    --tw-prose-bold: #f3f3f3;
+    --tw-prose-lead: #d9d9d9;
+    --tw-prose-headings: #fafafa;
+    --tw-prose-body: #f3f3f3;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Global prose-pink (non-theme-scoped, used as base)
+// ---------------------------------------------------------------------------
+.prose.prose-pink {
+  --tw-prose-td-borders: #eadef7;
+  --tw-prose-th-borders: #d8c3ef;
+  --tw-prose-pre-bg: #563271;
+  --tw-prose-pre-code: #f2ebfa;
+  --tw-prose-code: #492c61;
+  --tw-prose-captions: #7b44ab;
+  --tw-prose-quote-borders: #c4739d;
+  --tw-prose-quotes: #492c61;
+  --tw-prose-hr: #d8c3ef;
+  --tw-prose-bullets: #c4739d;
+  --tw-prose-counters: #c4739d;
+  --tw-prose-bold: #492c61;
+  --tw-prose-lead: #7b44ab;
+  --tw-prose-headings: #563271;
+  --tw-prose-body: #492c61;
+  --tw-prose-links: #da006b;
+  --tw-prose-kbd-shadows: #501854;
+  --tw-prose-kbd: #111827;
+}
+
+@media screen {
+  .prose.prose-pink:is(.dark *) {
+    --tw-prose-td-borders: #463854;
+    --tw-prose-th-borders: #6d5d7f;
+    --tw-prose-pre-bg: #00000080;
+    --tw-prose-pre-code: #d8c3ef;
+    --tw-prose-code: #fff;
+    --tw-prose-kbd-shadows: #f9f8fb;
+    --tw-prose-kbd: #fff;
+    --tw-prose-captions: #bf9be4;
+    --tw-prose-quote-borders: #dc749e;
+    --tw-prose-quotes: #f2ebfa;
+    --tw-prose-hr: #dc749e;
+    --tw-prose-bullets: #dc749e;
+    --tw-prose-counters: #dc749e;
+    --tw-prose-bold: #f2ebfa;
+    --tw-prose-links: #f472b6;
+    --tw-prose-lead: #d8c3ef;
+    --tw-prose-headings: #faf7fd;
+    --tw-prose-body: #f2ebfa;
+  }
+}
+
+// boring-dark prose override (outside @media)
+.boring-dark .prose.prose-pink {
+  --tw-prose-td-borders: #464646;
+  --tw-prose-th-borders: #6e6e6e;
+  --tw-prose-pre-bg: #00000080;
+  --tw-prose-pre-code: #d9d9d9;
+  --tw-prose-code: #fff;
+  --tw-prose-kbd-shadows: #f9f9f9;
+  --tw-prose-kbd: #fff;
+  --tw-prose-captions: silver;
+  --tw-prose-quote-borders: #a8a8a8;
+  --tw-prose-quotes: #f3f3f3;
+  --tw-prose-hr: #a8a8a8;
+  --tw-prose-bullets: #a8a8a8;
+  --tw-prose-counters: #a8a8a8;
+  --tw-prose-bold: #f3f3f3;
+  --tw-prose-lead: #d9d9d9;
+  --tw-prose-headings: #fafafa;
+  --tw-prose-body: #f3f3f3;
+}
+
+// ---------------------------------------------------------------------------
+// Print theme (uses boring/neutral palette)
+// ---------------------------------------------------------------------------
+@media print {
+  html {
+    color-scheme: light !important;
+  }
+
+  html > body[class] {
+    --background: #ebebeb;
+    --foreground: #363636;
+    --card: #f7f7f7;
+    --card-foreground: #4d4d4d;
+    --popover: #fff;
+    --popover-foreground: #363636;
+    --primary: #ad5273;
+    --primary-foreground: #fff;
+    --secondary: #dbdbdb;
+    --secondary-foreground: #585858;
+    --muted: #c9c9c9;
+    --muted-foreground: #616161;
+    --accent: #dbdbdb;
+    --accent-foreground: #4d4d4d;
+    --destructive: gray;
+    --destructive-foreground: #fff;
+    --info: var(--color-blue-500);
+    --info-foreground: var(--color-blue-700);
+    --success: var(--color-emerald-500);
+    --success-foreground: var(--color-emerald-700);
+    --warning: var(--color-amber-500);
+    --warning-foreground: var(--color-amber-700);
+    --border: #e8e8e8;
+    --input: #d4d4d4;
+    --ring: #818181;
+    --chart-1: #e76e50;
+    --chart-2: #2a9d90;
+    --chart-3: #274754;
+    --chart-4: #e8c468;
+    --chart-5: #f4a462;
+    --sidebar-background: #dfdfdf;
+    --sidebar-foreground: #4d4d4d;
+    --sidebar-primary: #4d4d4d;
+    --sidebar-primary-foreground: #fafafa;
+    --sidebar-accent: #f7f7f7;
+    --sidebar-accent-foreground: #4d4d4d;
+    --sidebar-border: #ebebeb;
+    --sidebar-ring: #818181;
+    --gradient-noise-top: #ededed;
+    --color-heading: #323232;
+    --chat-border: #d6d6d6;
+    --chat-background: #fafafa;
+    --chat-accent: #f3f3f3;
+    --chat-overlay: hsla(309, 0%, 92%, var(--blur-fallback, 0.72));
+    --chat-input-gradient: #e6e6e6;
+    --chat-input-background: hsla(270, 0%, 100%, var(--blur-fallback, 0.1));
+    --wordmark-color: #666;
+    visibility: hidden;
+    background: 0 0;
+    overflow: visible !important;
+  }
+
+  div[data-testid="tanstack_devtools"] {
+    display: none !important;
+  }
+}

@@ -1,0 +1,41 @@
+// ==========================================================================
+// t3.chat — SCSS Entry Point
+//
+// Organized from compiled Tailwind CSS v4.1.17 output
+// Source: styles-D_hSfuwv.css (369KB)
+//
+// Import order matters — variables first, then base reset, then components.
+// ==========================================================================
+
+// 1. Design tokens & CSS custom properties
+@use "variables";
+
+// 2. Base reset & element defaults
+@use "base";
+
+// 3. Font faces & typography utilities
+@use "typography";
+
+// 4. Theme definitions (theme-default, theme-boring, light/dark, print)
+@use "themes";
+
+// 5. Keyframe animations
+@use "animations";
+
+// 6. Layout — sidebar shell, scroll shadows, noise textures
+@use "layout";
+
+// 7. Sidebar-specific styles (menu items, scrollbar, collapsible)
+@use "sidebar";
+
+// 8. Chat area — messages, prose, chat input, footnotes
+@use "chat";
+
+// 9. Model selector — gradient borders, reflect effects
+@use "model-selector";
+
+// 10. UI Components — dialogs, popovers, data-state transitions, shimmer
+@use "components";
+
+// 11. Tailwind @property declarations & custom utilities
+@use "utilities";

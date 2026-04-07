@@ -1,0 +1,310 @@
+// ==========================================================================
+// Base / Reset Styles
+// Extracted from t3.chat compiled Tailwind CSS v4.1.17
+// ==========================================================================
+
+// ---------------------------------------------------------------------------
+// Universal reset
+// ---------------------------------------------------------------------------
+*,
+:after,
+:before,
+::backdrop {
+  box-sizing: border-box;
+  border: 0 solid;
+  margin: 0;
+  padding: 0;
+}
+
+::file-selector-button {
+  box-sizing: border-box;
+  border: 0 solid;
+  margin: 0;
+  padding: 0;
+}
+
+// ---------------------------------------------------------------------------
+// HTML defaults
+// ---------------------------------------------------------------------------
+html,
+:host {
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  line-height: 1.5;
+  font-family: var(
+    --default-font-family,
+    ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+  );
+  font-feature-settings: var(--default-font-feature-settings, normal);
+  font-variation-settings: var(--default-font-variation-settings, normal);
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+// ---------------------------------------------------------------------------
+// Element resets
+// ---------------------------------------------------------------------------
+hr {
+  height: 0;
+  color: inherit;
+  border-top-width: 1px;
+}
+
+abbr:where([title]) {
+  text-decoration: underline dotted;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+b, strong {
+  font-weight: bolder;
+}
+
+code, kbd, samp, pre {
+  font-family: var(
+    --default-mono-font-family,
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
+  );
+  font-feature-settings: var(--default-mono-font-feature-settings, normal);
+  font-variation-settings: var(--default-mono-font-variation-settings, normal);
+  font-size: 1em;
+}
+
+small {
+  font-size: 80%;
+}
+
+sub, sup {
+  vertical-align: baseline;
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+table {
+  text-indent: 0;
+  border-color: inherit;
+  border-collapse: collapse;
+}
+
+:-moz-focusring {
+  outline: auto;
+}
+
+progress {
+  vertical-align: baseline;
+}
+
+summary {
+  display: list-item;
+}
+
+ol, ul, menu {
+  list-style: none;
+}
+
+img, svg, video, canvas, audio, iframe, embed, object {
+  vertical-align: middle;
+  display: block;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+textarea {
+  resize: vertical;
+}
+
+// ---------------------------------------------------------------------------
+// Form element resets
+// ---------------------------------------------------------------------------
+button, input, select, optgroup, textarea {
+  font: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  opacity: 1;
+  background-color: #0000;
+  border-radius: 0;
+}
+
+::file-selector-button {
+  font: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  opacity: 1;
+  background-color: #0000;
+  border-radius: 0;
+  margin-inline-end: 4px;
+  appearance: button;
+}
+
+:where(select:is([multiple], [size])) optgroup {
+  font-weight: bolder;
+}
+
+:where(select:is([multiple], [size])) optgroup option {
+  padding-inline-start: 20px;
+}
+
+::placeholder {
+  opacity: 1;
+}
+
+@supports (not ((-webkit-appearance: -apple-pay-button))) or (contain-intrinsic-size: 1px) {
+  ::placeholder {
+    color: currentColor;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    ::placeholder {
+      color: color-mix(in oklab, currentcolor 50%, transparent);
+    }
+  }
+}
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+::-webkit-date-and-time-value {
+  min-height: 1lh;
+  text-align: inherit;
+}
+
+::-webkit-datetime-edit {
+  display: inline-flex;
+  padding-block: 0;
+}
+
+::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+::-webkit-datetime-edit-year-field,
+::-webkit-datetime-edit-month-field,
+::-webkit-datetime-edit-day-field,
+::-webkit-datetime-edit-hour-field,
+::-webkit-datetime-edit-minute-field,
+::-webkit-datetime-edit-second-field,
+::-webkit-datetime-edit-millisecond-field,
+::-webkit-datetime-edit-meridiem-field {
+  padding-block: 0;
+}
+
+::-webkit-calendar-picker-indicator {
+  line-height: 1;
+}
+
+:-moz-ui-invalid {
+  box-shadow: none;
+}
+
+button,
+input:where([type="button"], [type="reset"], [type="submit"]) {
+  appearance: button;
+}
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+[hidden]:where(:not([hidden="until-found"])) {
+  display: none !important;
+}
+
+// ---------------------------------------------------------------------------
+// Global border and focus
+// ---------------------------------------------------------------------------
+* {
+  border-color: var(--border);
+}
+
+:focus-visible {
+  outline-color: hsl(var(--ring));
+  outline-width: 1px;
+  outline-style: solid;
+}
+
+// ---------------------------------------------------------------------------
+// Body
+// ---------------------------------------------------------------------------
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  overscroll-behavior-y: none;
+  overflow: hidden;
+  counter-reset: katexEqnNo mmlEqnNo;
+}
+
+body:not([data-scroll-locked]) {
+  pointer-events: auto !important;
+}
+
+button,
+[role="button"],
+svg {
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+button {
+  user-select: none;
+}
+
+// ---------------------------------------------------------------------------
+// Safe-area / PWA min-height
+// ---------------------------------------------------------------------------
+@media screen {
+  html,
+  body,
+  .min-h-pwa {
+    min-height: calc(100svh + env(safe-area-inset-top));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile input zoom fix
+// ---------------------------------------------------------------------------
+@media (width <= 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile overscroll fix
+// ---------------------------------------------------------------------------
+@media screen and (width <= 767px) and (any-pointer: coarse) {
+  html,
+  body,
+  .min-h-pwa {
+    overscroll-behavior-y: none;
+  }
+}

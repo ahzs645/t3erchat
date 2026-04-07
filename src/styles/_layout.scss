@@ -1,0 +1,233 @@
+// ==========================================================================
+// Layout -- Sidebar shell, main content area, scroll-shadow, noise
+// Extracted from t3.chat compiled Tailwind CSS v4.1.17
+// ==========================================================================
+
+// ---------------------------------------------------------------------------
+// Sidebar width and collapsible states (via data-collapsible on .group)
+// ---------------------------------------------------------------------------
+.w-\(--sidebar-width\) {
+  width: var(--sidebar-width);
+}
+
+// Collapsed icon-only sidebar
+.group-data-\[collapsible\=icon\]\:w-\(--sidebar-width-icon\):is(
+  :where(.group)[data-collapsible="icon"] *
+) {
+  width: var(--sidebar-width-icon);
+}
+
+.group-data-\[collapsible\=icon\]\:w-\[calc\(var\(--sidebar-width-icon\)\+\(--spacing\(4\)\)\+2px\)\]:is(
+  :where(.group)[data-collapsible="icon"] *
+) {
+  width: calc(var(--sidebar-width-icon) + (calc(var(--spacing) * 4)) + 2px);
+}
+
+.group-data-\[collapsible\=icon\]\:overflow-hidden:is(
+  :where(.group)[data-collapsible="icon"] *
+) {
+  overflow: hidden;
+}
+
+// Off-canvas sidebar slide
+.group-data-\[collapsible\=offcanvas\]\:-translate-x-\(--sidebar-width\):is(
+  :where(.group)[data-collapsible="offcanvas"] *
+) {
+  --tw-translate-x: calc(var(--sidebar-width) * -1);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
+
+.group-data-\[collapsible\=offcanvas\]\:translate-x-\(--sidebar-width\):is(
+  :where(.group)[data-collapsible="offcanvas"] *
+) {
+  --tw-translate-x: var(--sidebar-width);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
+
+// ---------------------------------------------------------------------------
+// Sidebar resize handles
+// ---------------------------------------------------------------------------
+[data-side="left"][data-state="collapsed"]
+  .cursor-e-resize {
+  cursor: e-resize;
+}
+
+[data-side="right"][data-state="collapsed"]
+  .cursor-w-resize {
+  cursor: w-resize;
+}
+
+// ---------------------------------------------------------------------------
+// Background noise texture
+// ---------------------------------------------------------------------------
+.bg-noise {
+  background-image: url(/images/noise.png);
+  background-repeat: repeat;
+  background-size: 96px 96px;
+}
+
+// ---------------------------------------------------------------------------
+// Canvas grain overlay
+// ---------------------------------------------------------------------------
+.canvas-grain:after {
+  content: "";
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+  position: absolute;
+  inset: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Scroll shadow (CSS-only scroll indicators)
+// ---------------------------------------------------------------------------
+.scroll-shadow {
+  --fade-size: 1.5rem;
+  --scroll-shadow-bg: var(--background);
+  --scroll-shadow-fg: var(--foreground);
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .scroll-shadow {
+    --scroll-shadow-fg: color-mix(in oklab, var(--foreground), transparent 85%);
+  }
+}
+
+.scroll-shadow {
+  background:
+    linear-gradient(var(--scroll-shadow-bg) 35%, var(--scroll-shadow-bg)) top,
+    linear-gradient(var(--scroll-shadow-bg), var(--scroll-shadow-bg) 65%) bottom,
+    linear-gradient(to bottom, var(--scroll-shadow-fg), transparent) top,
+    linear-gradient(to top, var(--scroll-shadow-fg), transparent) bottom;
+  background-repeat: no-repeat;
+  background-size:
+    100% var(--fade-size),
+    100% var(--fade-size),
+    100% var(--fade-size),
+    100% var(--fade-size);
+  background-attachment: local, local, scroll, scroll;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .scroll-shadow {
+    background:
+      linear-gradient(
+          var(--scroll-shadow-bg) 35%,
+          color-mix(in oklab, var(--scroll-shadow-bg), transparent 100%)
+        )
+        top,
+      linear-gradient(
+          color-mix(in oklab, var(--scroll-shadow-bg), transparent 100%),
+          var(--scroll-shadow-bg) 65%
+        )
+        bottom,
+      linear-gradient(to bottom, var(--scroll-shadow-fg), transparent) top,
+      linear-gradient(to top, var(--scroll-shadow-fg), transparent) bottom;
+    background-repeat: no-repeat;
+    background-size:
+      100% var(--fade-size),
+      100% var(--fade-size),
+      100% var(--fade-size),
+      100% var(--fade-size);
+    background-attachment: local, local, scroll, scroll;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Scroll shadow mask (fade-edges via CSS mask)
+// ---------------------------------------------------------------------------
+.scroll-shadow-mask {
+  --fade-size: 2rem;
+  --fade-top-offset: 0px;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+.scroll-shadow-mask[data-shadow="top"],
+.scroll-shadow-mask[data-shadow="bottom"],
+.scroll-shadow-mask[data-shadow="both"] {
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+}
+
+.scroll-shadow-mask[data-shadow="top"] {
+  mask-image: linear-gradient(
+    to bottom,
+    black 0,
+    black var(--fade-top-offset),
+    transparent var(--fade-top-offset),
+    black calc(var(--fade-top-offset) + var(--fade-size)),
+    black 100%
+  );
+}
+
+.scroll-shadow-mask[data-shadow="bottom"] {
+  mask-image: linear-gradient(
+    to bottom,
+    black 0,
+    black calc(100% - var(--fade-size)),
+    transparent 100%
+  );
+}
+
+.scroll-shadow-mask[data-shadow="both"] {
+  mask-image: linear-gradient(
+    to bottom,
+    black 0,
+    black var(--fade-top-offset),
+    transparent var(--fade-top-offset),
+    black calc(var(--fade-top-offset) + var(--fade-size)),
+    black calc(100% - var(--fade-size)),
+    transparent 100%
+  );
+}
+
+.scroll-shadow-mask:not([data-shadow]),
+.scroll-shadow-mask[data-shadow="false"] {
+  mask-image: none;
+}
+
+// ---------------------------------------------------------------------------
+// Firefox scrollbar fix
+// ---------------------------------------------------------------------------
+@supports ((-moz-appearance: none)) {
+  .firefox-scrollbar-margin-fix {
+    --firefox-scrollbar: 10px;
+  }
+
+  html,
+  body {
+    scrollbar-gutter: stable;
+  }
+
+  [data-slot="alert-dialog-overlay"],
+  [data-slot="dialog-overlay"],
+  [data-slot="alert-dialog-content"],
+  [data-slot="dialog-content"] {
+    contain: layout style;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Sonner toast positioning
+// ---------------------------------------------------------------------------
+[data-sonner-toaster] {
+  font-family: inherit !important;
+}
+
+// ---------------------------------------------------------------------------
+// Banner stacking
+// ---------------------------------------------------------------------------
+[data-slot="banner-wrapper"] + [data-slot="banner-wrapper"] [data-slot="banner"] {
+  border-top-width: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+[data-slot="banner-wrapper"][data-exiting="true"] + [data-slot="banner-wrapper"] [data-slot="banner"] {
+  border-top-left-radius: var(--radius-md) !important;
+  border-top-right-radius: var(--radius-md) !important;
+  border-top-width: 1px !important;
+}

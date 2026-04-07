@@ -1,0 +1,252 @@
+// ==========================================================================
+// Chat Area — Messages, chat input, prose styling
+// Extracted from t3.chat compiled Tailwind CSS v4.1.17
+// ==========================================================================
+
+// ---------------------------------------------------------------------------
+// Chat input layout (container-query responsive)
+// ---------------------------------------------------------------------------
+.chat-input-inline-label {
+  display: none;
+}
+
+.chat-input-model-trigger {
+  max-width: 200px;
+}
+
+@container (width >= 36rem) {
+  .chat-input-model-trigger {
+    max-width: none;
+  }
+}
+
+.chat-input-search-shell {
+  overflow: visible;
+}
+
+.chat-input-search-desktop {
+  display: none;
+}
+
+.chat-input-search-trigger {
+  border-radius: 9999px;
+}
+
+@container (width >= 720px) {
+  .chat-input-model-trigger {
+    max-width: none;
+  }
+
+  .chat-input-inline-label {
+    display: block;
+  }
+
+  .chat-input-search-shell {
+    overflow: hidden;
+  }
+
+  .chat-input-search-shell-enabled {
+    width: 112px;
+  }
+
+  .chat-input-search-desktop {
+    display: flex;
+  }
+
+  .chat-input-search-mobile {
+    display: none;
+  }
+
+  .chat-input-search-trigger {
+    border-radius: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Prose — Markdown content styling
+// ---------------------------------------------------------------------------
+.prose :where(code):before,
+.prose :where(code):after {
+  content: none;
+}
+
+.prose :where(blockquote) {
+  font-style: normal;
+  font-weight: inherit;
+}
+
+.prose :where(blockquote p:first-of-type):before,
+.prose :where(blockquote p:last-of-type):after {
+  content: none;
+}
+
+.prose.prose-tos :where(blockquote) {
+  font-style: normal;
+}
+
+.prose.prose-tos :where(blockquote p:first-of-type):before,
+.prose.prose-tos :where(blockquote p:last-of-type):after {
+  content: none;
+}
+
+// Prose checkbox (task lists)
+.prose input[type="checkbox"] {
+  margin-top: calc(var(--spacing) * -0.5);
+  margin-right: calc(var(--spacing) * 1);
+  height: calc(var(--spacing) * 4);
+  width: calc(var(--spacing) * 4);
+  cursor: pointer;
+  appearance: none;
+  border-style: var(--tw-border-style);
+  border-width: 2px;
+  border-color: var(--border);
+  background-color: var(--background);
+  vertical-align: middle;
+  transition-property: all;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+  --tw-duration: 0.2s;
+  border-radius: 0.25rem;
+  transition-duration: 0.2s;
+  animation-duration: 0.2s;
+  position: relative;
+}
+
+.prose input[type="checkbox"]:checked {
+  border-color: var(--secondary);
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.prose input[type="checkbox"]:checked:after {
+  content: "";
+  height: calc(var(--spacing) * 1);
+  width: calc(var(--spacing) * 1.5);
+  border-style: var(--tw-border-style);
+  border-width: 2px;
+  border-top-width: 0;
+  border-right-width: 0;
+  border-color: var(--primary-foreground);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%) rotate(-45deg);
+}
+
+// Prose headings (break-after prevent)
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  break-after: avoid;
+}
+
+// Prose overflow
+.prose > p {
+  overflow: auto hidden;
+}
+
+.prose .katex-display {
+  padding-top: 0.06125rem;
+  overflow: auto hidden;
+}
+
+// Prose markdown table stacking
+.prose [data-markdown-table-container] + [data-markdown-table-container] {
+  margin-top: 1.5em;
+}
+
+// ---------------------------------------------------------------------------
+// Code blocks inside prose
+// ---------------------------------------------------------------------------
+.prose-code-blocks pre:not(.syntax-block) {
+  border-radius: var(--radius-lg);
+  background-color: var(--color-gray-800);
+  padding: calc(var(--spacing) * 4);
+}
+
+.prose-code-blocks pre.syntax-block {
+  margin-block: calc(var(--spacing) * 0);
+  padding: calc(var(--spacing) * 0);
+  background-color: #0000;
+}
+
+.prose-code-blocks pre.syntax-block > div {
+  border-radius: var(--radius-lg);
+}
+
+.markdown-code-block span {
+  display: inline;
+}
+
+// ---------------------------------------------------------------------------
+// Footnotes
+// ---------------------------------------------------------------------------
+.prose-footnote-block {
+  margin-top: calc(var(--spacing) * 2);
+  margin-bottom: calc(var(--spacing) * 0);
+  --tw-numeric-spacing: tabular-nums;
+  font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,)
+    var(--tw-numeric-figure,) var(--tw-numeric-spacing,)
+    var(--tw-numeric-fraction,);
+}
+
+.prose-footnote-block + .prose-footnote-block {
+  margin-top: calc(var(--spacing) * 0);
+}
+
+.prose-footnote-block:has(+ :not(.prose-footnote-block)),
+.prose-footnote-block:last-child {
+  margin-bottom: calc(var(--spacing) * 5);
+}
+
+// ---------------------------------------------------------------------------
+// Docs headings (anchor links)
+// ---------------------------------------------------------------------------
+.docs-heading {
+  scroll-margin-top: 1rem;
+  position: relative;
+}
+
+.docs-heading-anchor {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.docs-heading-text,
+.docs-heading-text:hover {
+  color: inherit;
+}
+
+.docs-heading:hover .docs-heading-anchor,
+.docs-heading:focus-within .docs-heading-anchor,
+.docs-heading:target .docs-heading-anchor {
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .docs-heading .docs-heading-anchor {
+    opacity: 0 !important;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Canvas preview
+// ---------------------------------------------------------------------------
+.canvas-preview-card {
+  container-type: inline-size;
+}
+
+@container (width <= 149px) {
+  .canvas-preview-quick-actions {
+    display: none !important;
+  }
+}
+
+@media (pointer: coarse) {
+  .canvas-preview-quick-actions {
+    display: none !important;
+  }
+}

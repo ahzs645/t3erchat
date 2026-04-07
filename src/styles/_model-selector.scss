@@ -1,0 +1,71 @@
+// ==========================================================================
+// Model Selector Popup Styles
+// Extracted from t3.chat compiled Tailwind CSS v4.1.17
+// ==========================================================================
+
+// The model-selector uses a gradient background defined per-theme.
+// See _themes.scss for:
+//   --model-selector-gradient (dark mode only, theme-default & theme-boring)
+//
+// The selector also uses the chat-input variables for its trigger area:
+//   --chat-input-background
+//   --chat-input-gradient
+
+// ---------------------------------------------------------------------------
+// Model selector trigger (max-width responsive via container queries)
+// ---------------------------------------------------------------------------
+// See _chat.scss for .chat-input-model-trigger which is the trigger element.
+// It responds to container queries at 36rem and 720px breakpoints.
+
+// ---------------------------------------------------------------------------
+// Button reflect effect (used on model selector CTA / primary buttons)
+// ---------------------------------------------------------------------------
+.button-reflect {
+  --min: #2e001f40 !important;
+  --max: #ffa6e2b0 !important;
+  --start: #000000d9 !important;
+}
+
+// ---------------------------------------------------------------------------
+// Border reflect (gradient border via CSS mask)
+// Used on model selector popover, premium cards, etc.
+// ---------------------------------------------------------------------------
+.border-reflect {
+  --c: 320 100% 75%;
+  --min: hsl(var(--c) / 0.2);
+  --max: hsl(var(--c) / 1);
+  --gradientBorder-gradient:
+    linear-gradient(180deg, var(--min), var(--max), var(--min)),
+    linear-gradient(15deg, var(--min) 50%, var(--max));
+  --opacity: 1;
+  --start: #000000d9;
+  position: relative;
+}
+
+.dark .border-reflect,
+.boring-dark .border-reflect {
+  --gradientBorder-gradient:
+    linear-gradient(180deg, #93335b00, #93335bbd, #93335b17),
+    linear-gradient(15deg, #93335b1f 50%, #93335bbd);
+  --start: #000000eb;
+}
+
+.border-reflect:before {
+  content: "";
+  pointer-events: none;
+  user-select: none;
+  border-radius: inherit;
+  padding: var(--gradientBorder-size, 1px);
+  background: var(--gradientBorder-gradient);
+  mask:
+    linear-gradient(var(--start), black) content-box,
+    linear-gradient(var(--start), black);
+  -webkit-mask:
+    linear-gradient(var(--start), black) content-box,
+    linear-gradient(var(--start), black);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: var(--opacity, 1);
+  position: absolute;
+  inset: 0;
+}
