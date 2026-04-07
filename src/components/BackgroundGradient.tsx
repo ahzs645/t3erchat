@@ -3,7 +3,7 @@ import React from "react";
 export function BackgroundGradient() {
   return (
     <div
-      className="inset-0 fixed dark:bg-sidebar [:where(.theme-boring_*)]:hidden z-0"
+      className="inset-0 fixed dark:bg-sidebar [:where(.theme-boring_*)]:hidden -z-10"
       style={{ "--x": 120, "--y": 36 } as React.CSSProperties}
     >
       <div

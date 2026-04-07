@@ -1,6 +1,8 @@
-import React from "react";
+interface CornerDecorationProps {
+  sidebarOpen?: boolean;
+}
 
-export function CornerDecoration() {
+export function CornerDecoration({ sidebarOpen = true }: CornerDecorationProps) {
   return (
     <div
       className="group pointer-events-none absolute top-3.5 z-10 -mb-8 h-32 w-full origin-top transition-all ease-snappy"
@@ -9,7 +11,7 @@ export function CornerDecoration() {
       }}
     >
       <svg
-        className="absolute h-9 origin-top-left skew-x-30 overflow-visible -right-16 transform-gpu transition-transform duration-300 ease-snappy -translate-x-8"
+        className={`absolute h-9 origin-top-left skew-x-30 overflow-visible -right-16 transform-gpu transition-transform duration-300 ease-snappy ${sidebarOpen ? "-translate-x-8" : "translate-x-0"}`}
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"

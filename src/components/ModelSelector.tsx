@@ -9,6 +9,7 @@ interface ModelSelectorProps {
   onSelectModel: (model: Model) => void;
   favorites: Set<string>;
   onToggleFavorite: (modelId: string) => void;
+  anchorRef?: React.RefObject<HTMLElement | null>;
 }
 
 // ─── Provider sidebar order ───────────────────────────────────────────
@@ -678,11 +679,15 @@ export function ModelSelector({
   onSelectModel,
   favorites,
   onToggleFavorite,
+  anchorRef,
 }: ModelSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeProvider, setActiveProvider] = useState("favorites");
   const [showArchived, setShowArchived] = useState(false);
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [activeFeatureFilters, setActiveFeatureFilters] = useState<Set<string>>(new Set());
+  const [showCombinedResults, setShowCombinedResults] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const filterMenuRef = useRef<HTMLDivElement>(null);
@@ -693,6 +698,7 @@ export function ModelSelector({
       setSearchQuery("");
       setActiveProvider("favorites");
       setFilterMenuOpen(false);
+      setIsClosing(false);
       setTimeout(() => searchInputRef.current?.focus(), 50);
     }
   }, [isOpen]);
@@ -758,8 +764,23 @@ export function ModelSelector({
       );
     }
 
+    // Apply feature filters
+    if (activeFeatureFilters.size > 0) {
+      if (showCombinedResults) {
+        // AND: model must have ALL selected features
+        filtered = filtered.filter((m) =>
+          [...activeFeatureFilters].every((f) => m.features.includes(f as Feature))
+        );
+      } else {
+        // OR: model must have ANY selected feature
+        filtered = filtered.filter((m) =>
+          [...activeFeatureFilters].some((f) => m.features.includes(f as Feature))
+        );
+      }
+    }
+
     return filtered;
-  }, [activeProvider, searchQuery, favorites, showArchived]);
+  }, [activeProvider, searchQuery, favorites, showArchived, activeFeatureFilters, showCombinedResults]);
 
   const handleSelectModel = useCallback(
     (model: Model) => {
@@ -777,30 +798,42 @@ export function ModelSelector({
     [onToggleFavorite]
   );
 
+  // Compute position above the anchor (model trigger button)
+  const anchorRect = anchorRef?.current?.getBoundingClientRect();
+  const popoverStyle: React.CSSProperties = anchorRect
+    ? {
+        position: "fixed",
+        left: `${anchorRect.left}px`,
+        top: `${anchorRect.top - 8}px`, // 8px gap above trigger
+        transform: "translateY(-100%)",
+        zIndex: 100,
+      }
+    : {
+        position: "fixed",
+        left: "50%",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 100,
+      };
+
   if (!isOpen) return null;
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Transparent backdrop — no darkening, just catches clicks */}
       <div
-        className="fixed inset-0 z-[99] bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-[99]"
         onClick={onClose}
       />
 
-      {/* Dialog wrapper */}
-      <div
-        style={{
-          position: "fixed",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 100,
-        }}
-      >
+      {/* Dialog wrapper — positioned above trigger */}
+      <div style={popoverStyle}>
         <div
           role="dialog"
-          data-state="open"
-          className="z-50 border text-popover-foreground outline-hidden data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 w-[460px] max-w-screen overflow-hidden rounded-xl border-chat-border bg-background/69 p-0 shadow-2xl backdrop-blur-md"
+          data-state={isClosing ? "closed" : "open"}
+          data-side="top"
+          data-align="start"
+          className="z-50 border text-popover-foreground outline-hidden data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 w-[460px] max-w-screen overflow-hidden rounded-xl border-chat-border bg-background/69 p-0 shadow-2xl backdrop-blur-md"
         >
           {/* Main container */}
           <div className="relative overflow-hidden rounded-xl">
@@ -835,26 +868,77 @@ export function ModelSelector({
                     aria-label="Filter options"
                   >
                     <FunnelIcon />
-                    {showArchived && (
+                    {(showArchived || activeFeatureFilters.size > 0) && (
                       <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary" />
                     )}
                   </button>
 
-                  {/* Filter dropdown */}
+                  {/* Filter dropdown — capability filters */}
                   {filterMenuOpen && (
                     <div
                       ref={filterMenuRef}
-                      className="absolute right-0 top-full mt-1 z-50 w-56 rounded-lg border border-chat-border bg-background/95 p-2 shadow-xl backdrop-blur-md"
+                      data-side="bottom"
+                      data-align="end"
+                      data-state="open"
+                      role="dialog"
+                      className="absolute right-0 top-full mt-1 z-50 max-h-[calc(100dvh-12rem)] w-56 overflow-y-auto rounded-md border border-chat-border bg-background p-1.5 text-popover-foreground shadow-md outline-hidden data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
                     >
-                      <label className="flex items-center gap-2 cursor-pointer rounded-md px-2 py-1.5 text-sm text-foreground hover:bg-sidebar-accent/60 transition-colors">
-                        <input
-                          type="checkbox"
-                          checked={showArchived}
-                          onChange={(e) => setShowArchived(e.target.checked)}
-                          className="size-4 rounded border-muted-foreground/40 accent-primary"
-                        />
-                        Show archived models
-                      </label>
+                      <div className="space-y-0.5">
+                        {([
+                          { id: "fast", label: "Fast", icon: "zap", colorDark: "hsl(46 77% 79%)", color: "hsl(46 77% 52%)" },
+                          { id: "images", label: "Vision", icon: "eye", colorDark: "hsl(168 54% 74%)", color: "hsl(168 54% 52%)" },
+                          { id: "reasoning", label: "Reasoning", icon: "brain", colorDark: "hsl(263 58% 75%)", color: "hsl(263 58% 53%)" },
+                          { id: "reasoningEffort", label: "Effort Control", icon: "settings2", colorDark: "hsl(304 44% 72%)", color: "hsl(304 44% 51%)" },
+                          { id: "toolCalling", label: "Tool Calling", icon: "wrench", colorDark: "hsl(10 74% 74%)", color: "hsl(10 54% 54%)" },
+                          { id: "imageGeneration", label: "Image Generation", icon: "image-plus", colorDark: "hsl(12 60% 60%)", color: "hsl(12 60% 45%)" },
+                          { id: "nativePDFs", label: "PDF Comprehension", icon: "file-star", colorDark: "hsl(237 75% 77%)", color: "hsl(237 55% 57%)" },
+                        ] as const).map((feat) => (
+                          <button
+                            key={feat.id}
+                            className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-sidebar-accent/60 ${activeFeatureFilters.has(feat.id) ? "bg-sidebar-accent/80" : ""}`}
+                            onClick={() => {
+                              setActiveFeatureFilters(prev => {
+                                const next = new Set(prev);
+                                if (next.has(feat.id)) next.delete(feat.id);
+                                else next.add(feat.id);
+                                return next;
+                              });
+                            }}
+                          >
+                            <div
+                              className="relative flex items-center justify-center overflow-hidden size-6.5 rounded-full"
+                              style={{ "--color-dark": feat.colorDark, "--color": feat.color, color: `var(--color)` } as React.CSSProperties}
+                            >
+                              <div className="absolute inset-0 bg-current opacity-20 dark:opacity-10" />
+                              <FilterFeatureIcon name={feat.icon} />
+                            </div>
+                            <span className="flex-1">{feat.label}</span>
+                            {activeFeatureFilters.has(feat.id) && (
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check size-4 text-primary"><path d="M20 6 9 17l-5-5" /></svg>
+                            )}
+                          </button>
+                        ))}
+                        <div className="my-1 h-px bg-border/60" />
+                        <button
+                          className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors hover:bg-sidebar-accent/60 ${showCombinedResults ? "bg-sidebar-accent/80" : ""}`}
+                          onClick={() => setShowCombinedResults(!showCombinedResults)}
+                        >
+                          <span className="flex-1">Show combined results</span>
+                          {showCombinedResults && (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check size-4 text-primary"><path d="M20 6 9 17l-5-5" /></svg>
+                          )}
+                        </button>
+                        <div className="my-1 h-px bg-border/60" />
+                        <label className="flex items-center gap-2 cursor-pointer rounded-lg px-2.5 py-2 text-sm text-foreground hover:bg-sidebar-accent/60 transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={showArchived}
+                            onChange={(e) => setShowArchived(e.target.checked)}
+                            className="size-4 rounded border-muted-foreground/40 accent-primary"
+                          />
+                          Show archived
+                        </label>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -960,4 +1044,19 @@ export function ModelSelector({
       </div>
     </>
   );
+}
+
+function FilterFeatureIcon({ name }: { name: string }) {
+  const cls = "size-3.5";
+  const props = { xmlns: "http://www.w3.org/2000/svg", width: 24, height: 24, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, className: `lucide lucide-${name} ${cls}`, "aria-hidden": true as const };
+  switch (name) {
+    case "zap": return <svg {...props}><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg>;
+    case "eye": return <svg {...props}><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>;
+    case "brain": return <svg {...props}><path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" /><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" /><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" /><path d="M18 18a4 4 0 0 0 2-7.464" /><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" /><path d="M6 18a4 4 0 0 1-2-7.464" /><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" /></svg>;
+    case "settings2": return <svg {...props}><path d="M14 17H5" /><path d="M19 7h-9" /><circle cx="17" cy="17" r="3" /><circle cx="7" cy="7" r="3" /></svg>;
+    case "wrench": return <svg {...props}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z" /></svg>;
+    case "image-plus": return <svg {...props}><path d="M16 5h6" /><path d="M19 2v6" /><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /><circle cx="9" cy="9" r="2" /></svg>;
+    case "file-star": return <svg {...props} viewBox="0 0 24 24"><g transform="matrix(1,0,0,1,-0.694323,-1)"><path d="M15.019,22L18,22C19.097,22 20,21.097 20,20L20,7L15,2L6,2C4.903,2 4,2.903 4,4L4,8.443" fill="none" fillRule="nonzero" stroke="currentColor" strokeWidth="2" /><path d="M14,2L14,6C14,7.097 14.903,8 16,8L20,8" fill="none" fillRule="nonzero" stroke="currentColor" strokeWidth="2" /><g transform="matrix(0.631534,0,0,0.631534,0.432392,8.69443)"><path d="M11.525,2.295C11.614,2.115 11.799,2 12,2C12.201,2 12.386,2.115 12.475,2.295L14.785,6.974C15.094,7.599 15.691,8.033 16.38,8.134L21.546,8.89C21.805,8.928 22,9.152 22,9.415C22,9.557 21.942,9.694 21.84,9.794L18.104,13.432C17.604,13.919 17.375,14.622 17.493,15.31L18.375,20.45C18.38,20.48 18.383,20.511 18.383,20.542C18.383,20.833 18.144,21.072 17.853,21.072C17.766,21.072 17.681,21.051 17.604,21.01L12.986,18.582C12.369,18.258 11.63,18.258 11.013,18.582L6.396,21.01C6.32,21.05 6.234,21.072 6.148,21.072C5.857,21.072 5.618,20.832 5.618,20.542C5.618,20.511 5.621,20.48 5.626,20.45L6.507,15.311C6.625,14.623 6.396,13.919 5.896,13.432L2.16,9.795C2.057,9.695 1.998,9.557 1.998,9.414C1.998,9.151 2.194,8.926 2.454,8.889L7.619,8.134C8.309,8.034 8.907,7.599 9.216,6.974L11.525,2.295Z" fill="none" fillRule="nonzero" stroke="currentColor" strokeWidth="3.17" /></g></g></svg>;
+    default: return null;
+  }
 }

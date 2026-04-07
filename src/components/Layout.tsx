@@ -1,14 +1,20 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { Sidebar } from "./Sidebar";
 import { MainContent } from "./MainContent";
 import { ModelSelector } from "./ModelSelector";
 import { BackgroundGradient } from "./BackgroundGradient";
 import { TopLeftButtons } from "./TopLeftButtons";
 import { TopRightButtons } from "./TopRightButtons";
+import { CanvasSidebar } from "./CanvasSidebar";
+import { CanvasPage } from "./CanvasPage";
 import { activeModels, type Model } from "../data/models";
 
+export type ViewMode = "chat" | "canvas";
+
 export function Layout() {
+  const modelTriggerRef = useRef<HTMLButtonElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [viewMode, setViewMode] = useState<ViewMode>("chat");
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<Model>(
     () =>
@@ -51,33 +57,55 @@ export function Layout() {
       {/* Background gradient */}
       <BackgroundGradient />
 
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+      {/* Sidebar — switches between chat and canvas variants */}
+      {viewMode === "chat" ? (
+        <Sidebar
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+          onGoToCanvas={() => setViewMode("canvas")}
+        />
+      ) : (
+        <CanvasSidebar
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+          onGoToChat={() => setViewMode("chat")}
+        />
+      )}
 
       {/* Top-left buttons (sidebar toggle, search, new thread) */}
       <TopLeftButtons onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
 
-      {/* Main content */}
-      <MainContent
-        selectedModel={selectedModel}
-        onOpenModelSelector={() => setModelSelectorOpen(true)}
-      />
+      {/* Main content — switches between chat and canvas */}
+      {viewMode === "chat" ? (
+        <MainContent
+          selectedModel={selectedModel}
+          onOpenModelSelector={() => setModelSelectorOpen(prev => !prev)}
+          modelTriggerRef={modelTriggerRef}
+          isModelSelectorOpen={modelSelectorOpen}
+          sidebarOpen={sidebarOpen}
+        />
+      ) : (
+        <CanvasPage sidebarOpen={sidebarOpen} />
+      )}
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-50 hidden bg-sidebar/50 pt-safe backdrop-blur-xs mobile:block"></div>
 
-      {/* Model selector popup */}
-      <ModelSelector
-        isOpen={modelSelectorOpen}
-        onClose={() => setModelSelectorOpen(false)}
-        selectedModel={selectedModel}
-        onSelectModel={(m) => {
-          setSelectedModel(m);
-          setModelSelectorOpen(false);
-        }}
-        favorites={favorites}
-        onToggleFavorite={toggleFavorite}
-      />
+      {/* Model selector popup (chat mode only) */}
+      {viewMode === "chat" && (
+        <ModelSelector
+          isOpen={modelSelectorOpen}
+          onClose={() => setModelSelectorOpen(false)}
+          selectedModel={selectedModel}
+          onSelectModel={(m) => {
+            setSelectedModel(m);
+            setModelSelectorOpen(false);
+          }}
+          favorites={favorites}
+          onToggleFavorite={toggleFavorite}
+          anchorRef={modelTriggerRef}
+        />
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import React from "react";
 import { ChatInputForm } from "./ChatInputForm";
 import { TopRightButtons } from "./TopRightButtons";
 import { CornerDecoration } from "./CornerDecoration";
@@ -6,21 +7,27 @@ import type { Model } from "../data/models";
 interface MainContentProps {
   selectedModel: Model;
   onOpenModelSelector: () => void;
+  modelTriggerRef?: React.RefObject<HTMLButtonElement | null>;
+  isModelSelectorOpen?: boolean;
+  sidebarOpen?: boolean;
 }
 
 export function MainContent({
   selectedModel,
   onOpenModelSelector,
+  modelTriggerRef,
+  isModelSelectorOpen,
+  sidebarOpen = true,
 }: MainContentProps) {
   return (
     <main className="firefox-scrollbar-margin-fix min-h-pwa relative flex w-full flex-1 flex-col overflow-y-clip transition-[width,height] print:absolute print:top-0 print:left-0 print:h-auto print:min-h-auto print:overflow-visible">
-      {/* Background panel with noise */}
-      <div className="absolute top-0 bottom-0 w-full overflow-hidden border-t border-l border-chat-border bg-chat-background bg-fixed pb-[140px] transition-all ease-snappy select-none max-sm:border-none sm:translate-y-3.5 sm:rounded-tl-xl print:hidden">
+      {/* Background panel with noise — slides up when sidebar closed */}
+      <div className={`absolute top-0 bottom-0 w-full overflow-hidden border-chat-border bg-chat-background bg-fixed pb-[140px] transition-all ease-snappy select-none max-sm:border-none print:hidden ${sidebarOpen ? "border-t border-l sm:translate-y-3.5 sm:rounded-tl-xl" : "sm:translate-y-0"}`}>
         <div className="bg-noise absolute inset-0 -top-3.5 bg-fixed bg-bottom-right transition-transform ease-snappy" />
       </div>
 
-      {/* Top gradient noise bar */}
-      <div className="absolute inset-x-3 top-0 z-10 box-content overflow-hidden border-b border-chat-border bg-gradient-noise-top/80 backdrop-blur-md transition-[transform,border] ease-snappy max-sm:hidden sm:h-3.5 print:hidden blur-fallback:bg-gradient-noise-top">
+      {/* Top gradient noise bar — hidden when sidebar closed */}
+      <div className={`absolute inset-x-3 top-0 z-10 box-content overflow-hidden border-b border-chat-border bg-gradient-noise-top/80 backdrop-blur-md transition-[transform,border,opacity,height] ease-snappy max-sm:hidden print:hidden blur-fallback:bg-gradient-noise-top ${sidebarOpen ? "sm:h-3.5 opacity-100" : "sm:h-0 opacity-0 border-b-0"}`}>
         <div className="absolute top-0 left-0 h-full w-8 bg-linear-to-r from-gradient-noise-top to-transparent blur-fallback:hidden" />
         <div className="absolute top-0 right-24 h-full w-8 bg-linear-to-l from-gradient-noise-top to-transparent blur-fallback:hidden" />
         <div className="absolute top-0 right-0 h-full w-24 bg-gradient-noise-top blur-fallback:hidden" />
@@ -28,9 +35,9 @@ export function MainContent({
 
       {/* Main scrollable area */}
       <div className="absolute top-0 bottom-0 w-full print:static print:h-auto print:overflow-visible">
-        {/* Top-right corner decoration */}
-        <div className="fixed top-0 right-0 max-sm:hidden print:hidden">
-          <CornerDecoration />
+        {/* Top-right corner decoration — hidden when sidebar closed */}
+        <div className={`fixed top-0 right-0 max-sm:hidden print:hidden transition-opacity ease-snappy ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <CornerDecoration sidebarOpen={sidebarOpen} />
         </div>
 
         {/* Chat input (bottom floating) */}
@@ -40,6 +47,8 @@ export function MainContent({
               <ChatInputForm
                 selectedModel={selectedModel}
                 onOpenModelSelector={onOpenModelSelector}
+                modelTriggerRef={modelTriggerRef}
+                isModelSelectorOpen={isModelSelectorOpen}
               />
             </div>
           </div>
@@ -48,19 +57,19 @@ export function MainContent({
         {/* Scroll container with welcome content */}
         <div
           id="chat-scroll-container"
-          className="absolute inset-0 overflow-y-scroll pt-8 sm:pt-3.5 print:visible print:static print:inset-auto print:block print:h-auto print:scroll-pb-0! print:overflow-visible print:pt-2 print:pb-0!"
+          className={`absolute inset-0 overflow-y-scroll print:visible print:static print:inset-auto print:block print:h-auto print:scroll-pb-0! print:overflow-visible print:pt-2 print:pb-0! transition-[padding] ease-snappy ${sidebarOpen ? "pt-8 sm:pt-3.5" : "pt-2 sm:pt-0"}`}
           style={{
             paddingBottom: "144px",
             scrollbarGutter: "stable both-edges",
             scrollPaddingBottom: "112px",
           }}
         >
-          {/* Top-right corner (for scroll container) */}
+          {/* Top-right corner (for scroll container) — hidden when sidebar closed */}
           <div
-            className="pointer-events-none fixed top-0 right-0 z-20 h-20 w-40 print:invisible max-sm:hidden print:hidden"
+            className={`pointer-events-none fixed top-0 right-0 z-20 h-20 w-40 print:invisible max-sm:hidden print:hidden transition-opacity ease-snappy ${sidebarOpen ? "opacity-100" : "opacity-0"}`}
             style={{ clipPath: "inset(0px 12px 0px 0px)" }}
           >
-            <CornerDecoration />
+            <CornerDecoration sidebarOpen={sidebarOpen} />
           </div>
 
           {/* Top-right buttons */}

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { Tooltip } from "./Tooltip";
 
 export function TopRightButtons() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -54,7 +55,7 @@ export function TopRightButtons() {
       <div className="pointer-events-none absolute inset-0 left-auto -z-10 w-0 rounded-md bg-transparent backdrop-blur-xs transition-[background-color,width] delay-0 duration-250 max-sm:bg-sidebar/50 max-sm:delay-125 max-sm:duration-125 max-sm:w-19" />
       <div className="flex flex-row items-center text-muted-foreground gap-0.5 rounded-md p-1 transition-all rounded-bl-xl">
         {/* Temporary chat button */}
-        <span className="inline-flex" data-state="closed">
+        <Tooltip content="Temporary chat" side="bottom">
           <button
             className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground z-0 size-8 transform-gpu transition-all duration-300 sm:ml-2 sm:rounded-bl-xl sm:bg-gradient-noise-top translate-x-0 opacity-100"
             aria-label="Enable temporary chat mode"
@@ -63,23 +64,25 @@ export function TopRightButtons() {
               <path d="M12 6v6l4 2" /><circle cx="12" cy="12" r="10" />
             </svg>
           </button>
-        </span>
+        </Tooltip>
 
         {/* Settings button */}
-        <button
-          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground sm:bg-gradient-noise-top relative z-10 size-8"
-          ref={settingsBtnRef}
-          aria-label="Settings"
-          type="button"
-          aria-haspopup="menu"
-          aria-expanded={settingsOpen}
-          data-state={settingsOpen ? "open" : "closed"}
-          onClick={() => setSettingsOpen(!settingsOpen)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-settings2 lucide-settings-2 size-4" aria-hidden="true">
-            <path d="M14 17H5" /><path d="M19 7h-9" /><circle cx="17" cy="17" r="3" /><circle cx="7" cy="7" r="3" />
-          </svg>
-        </button>
+        <Tooltip content="Settings" side="bottom">
+          <button
+            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-muted/40 hover:text-foreground disabled:hover:bg-transparent disabled:hover:text-foreground sm:bg-gradient-noise-top relative z-10 size-8"
+            ref={settingsBtnRef}
+            aria-label="Settings"
+            type="button"
+            aria-haspopup="menu"
+            aria-expanded={settingsOpen}
+            data-state={settingsOpen ? "open" : "closed"}
+            onClick={() => setSettingsOpen(!settingsOpen)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-settings2 lucide-settings-2 size-4" aria-hidden="true">
+              <path d="M14 17H5" /><path d="M19 7h-9" /><circle cx="17" cy="17" r="3" /><circle cx="7" cy="7" r="3" />
+            </svg>
+          </button>
+        </Tooltip>
       </div>
 
       {/* Settings dropdown menu — rendered via portal to avoid shifting buttons */}
