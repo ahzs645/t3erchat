@@ -19,22 +19,22 @@ interface SidebarProps {
 }
 
 const SAMPLE_THREADS = [
-  { id: "1", title: "Workspace Design Consultant Description", group: "pinned" },
-  { id: "2", title: "Catan Box Insert Design with OpenSCAD", group: "today", branched: true },
-  { id: "3", title: "Ahmad Jalil CV Data in YAML Format", group: "yesterday" },
-  { id: "4", title: "Library Skills for Clinical Informatics", group: "yesterday" },
-  { id: "5", title: "Library Job Point: Student Engagement", group: "yesterday" },
-  { id: "6", title: "Landing Page for Cloud-Based Platform", group: "last30" },
-  { id: "7", title: "Prince George Food Safety Investigation", group: "last30" },
-  { id: "8", title: "Download Web App & Sourcemap for Debugging", group: "last30" },
-  { id: "9", title: "Leather Brand Name Ideas", group: "last30", branched: true },
-  { id: "10", title: "More Ideas Generation", group: "last30" },
-  { id: "11", title: "CSS template feedback for MacOSX Aqua", group: "last30" },
-  { id: "12", title: "Leather company name suggestions", group: "older" },
-  { id: "13", title: "UNBC Spark Lab Innovation Hub", group: "older" },
-  { id: "14", title: "Convert SVG Buttons to CSS", group: "older", branched: true },
-  { id: "15", title: "Refined Data Analysis for Research Paper", group: "older" },
-  { id: "16", title: "Black Carbon Meeting Notes", group: "older" },
+  { id: "1", title: "Explain Rust Ownership to a JS Developer", group: "pinned" },
+  { id: "2", title: "Debug This Docker Compose Setup", group: "today", branched: true },
+  { id: "3", title: "Recipe Scaling Calculator Logic", group: "today" },
+  { id: "4", title: "Regex to Parse Email Headers", group: "yesterday" },
+  { id: "5", title: "Compare React State Management Options", group: "yesterday" },
+  { id: "6", title: "Plan a REST API for a Bookstore", group: "yesterday" },
+  { id: "7", title: "Why Is My SQL Query Slow?", group: "last30" },
+  { id: "8", title: "Git Rebase vs Merge Explained", group: "last30" },
+  { id: "9", title: "Build a Color Palette Generator", group: "last30", branched: true },
+  { id: "10", title: "Does Theo Use Obsidian?", group: "last30" },
+  { id: "11", title: "CSS Grid vs Flexbox Decision Guide", group: "last30" },
+  { id: "12", title: "Design a Rate Limiter for an API", group: "older" },
+  { id: "13", title: "WebSocket vs SSE for Live Updates", group: "older" },
+  { id: "14", title: "Migrate a Monolith to Microservices", group: "older", branched: true },
+  { id: "15", title: "Set Up CI/CD with GitHub Actions", group: "older" },
+  { id: "16", title: "Kubernetes Pod Scheduling Explained", group: "older" },
 ];
 
 export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSelectThread, onNewChat }: SidebarProps) {
