@@ -44,6 +44,13 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSele
   const [activeProfileId, setActiveProfileId] = useState("test");
   const activeId = activeThreadId ?? "";
 
+  const isMobile = () => window.innerWidth < 768;
+
+  const selectThread = (id: string) => {
+    onSelectThread?.(id);
+    if (isMobile()) onToggle();
+  };
+
   const togglePin = (id: string) => {
     setPinnedIds(prev => {
       const next = new Set(prev);
@@ -69,17 +76,27 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSele
 
   return (
     <div
-      className="group peer hidden text-sidebar-foreground md:block print:hidden"
+      className="group peer text-sidebar-foreground print:hidden"
       data-state={isOpen ? "expanded" : "collapsed"}
       data-collapsible={isOpen ? "" : "offcanvas"}
       data-variant="inset"
       data-side="left"
     >
-      {/* Spacer that reserves width */}
-      <div className="relative h-svh w-(--sidebar-width) bg-transparent ease-snappy group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[collapsible=offcanvas]:w-0 group-data-[side=right]:rotate-180 transition-[width]" />
+      {/* Spacer that reserves width — desktop only */}
+      <div className="relative hidden h-svh w-(--sidebar-width) bg-transparent ease-snappy md:block group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[collapsible=offcanvas]:w-0 group-data-[side=right]:rotate-180 transition-[width]" />
+
+      {/* Backdrop overlay — mobile only */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-xs transition-opacity duration-200 md:hidden ${
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={onToggle}
+      />
 
       {/* Fixed sidebar panel */}
-      <div className="fixed inset-y-0 hidden h-svh w-(--sidebar-width) transition ease-snappy md:flex left-0 group-data-[collapsible=offcanvas]:-translate-x-(--sidebar-width) p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)] group z-50 border-none">
+      <div className={`fixed inset-y-0 flex h-svh w-(--sidebar-width) transition ease-snappy left-0 p-2 group z-50 border-none md:group-data-[collapsible=offcanvas]:-translate-x-(--sidebar-width) group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)] ${
+        isOpen ? "translate-x-0" : "-translate-x-(--sidebar-width) md:translate-x-0"
+      }`}>
         <div
           data-sidebar="sidebar"
           className="flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
@@ -256,7 +273,7 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSele
                     <div className="grid transition-[grid-template-rows] duration-200 ease-out" style={{ gridTemplateRows: pinnedCollapsed ? "0fr" : "1fr" }}>
                       <div className="overflow-hidden">
                         {pinnedThreads.map(t => (
-                          <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => onSelectThread?.(t.id)} />
+                          <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => selectThread(t.id)} />
                         ))}
                       </div>
                     </div>
@@ -275,7 +292,7 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSele
                       <span>{label}</span>
                     </div>
                     {threads.map(t => (
-                      <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned={pinnedIds.has(t.id)} branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => onSelectThread?.(t.id)} />
+                      <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned={pinnedIds.has(t.id)} branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => selectThread(t.id)} />
                     ))}
                   </div>
                 ))}

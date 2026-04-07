@@ -13,7 +13,7 @@ export type ViewMode = "chat" | "canvas";
 
 export function Layout() {
   const modelTriggerRef = useRef<HTMLButtonElement>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 768);
   const [viewMode, setViewMode] = useState<ViewMode>("chat");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [displayedView, setDisplayedView] = useState<ViewMode>("chat");
