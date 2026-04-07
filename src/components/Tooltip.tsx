@@ -72,12 +72,14 @@ export function Tooltip({ children, content, side = "bottom", delayMs = 300, sid
           role="tooltip"
           data-state="delayed-open"
           data-side={side}
-          className="z-[9999] overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md pointer-events-none whitespace-nowrap animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2"
+          className="z-[9999] overflow-hidden rounded-md border border-border/50 px-3 py-1.5 text-xs shadow-lg pointer-events-none whitespace-nowrap animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2"
           style={{
             position: "fixed",
             left: pos.x,
             top: pos.y,
             transform,
+            backgroundColor: "var(--popover, #1a1419)",
+            color: "var(--popover-foreground, #f0e8f3)",
           }}
         >
           {content}

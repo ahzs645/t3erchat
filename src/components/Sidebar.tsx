@@ -13,6 +13,9 @@ interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onGoToCanvas?: () => void;
+  activeThreadId?: string | null;
+  onSelectThread?: (id: string) => void;
+  onNewChat?: () => void;
 }
 
 const SAMPLE_THREADS = [
@@ -34,10 +37,11 @@ const SAMPLE_THREADS = [
   { id: "16", title: "Black Carbon Meeting Notes", group: "older" },
 ];
 
-export function Sidebar({ isOpen, onToggle, onGoToCanvas }: SidebarProps) {
+export function Sidebar({ isOpen, onToggle, onGoToCanvas, activeThreadId, onSelectThread, onNewChat }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set(["1"]));
-  const [activeId, setActiveId] = useState("1");
+  const [activeProfileId, setActiveProfileId] = useState("test");
+  const activeId = activeThreadId ?? "";
 
   const togglePin = (id: string) => {
     setPinnedIds(prev => {
@@ -173,6 +177,7 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas }: SidebarProps) {
                 href="/"
                 data-status="active"
                 aria-current="page"
+                onClick={(e) => { e.preventDefault(); onNewChat?.(); }}
               >
                 <span
                   className="w-full text-center select-none"
@@ -220,6 +225,16 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas }: SidebarProps) {
             className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden small-scrollbar scroll-shadow-mask relative overflow-x-hidden pb-2"
             data-shadow="bottom"
           >
+            {activeProfileId !== "test" ? (
+              /* Empty state for non-test profiles */
+              <div className="flex flex-col items-center justify-center gap-3 px-4 py-12 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="size-8 text-muted-foreground/30">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <p className="text-sm text-muted-foreground/60">No conversations yet.</p>
+                <p className="text-xs text-muted-foreground/40">Start a new chat to begin.</p>
+              </div>
+            ) : (
             <div className="animate-fade-in">
               <div className="relative mt-2 w-full">
                 {/* Pinned */}
@@ -230,7 +245,7 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas }: SidebarProps) {
                       <span>Pinned</span>
                     </div>
                     {pinnedThreads.map(t => (
-                      <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => setActiveId(t.id)} />
+                      <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => onSelectThread?.(t.id)} />
                     ))}
                   </>
                 )}
@@ -247,15 +262,16 @@ export function Sidebar({ isOpen, onToggle, onGoToCanvas }: SidebarProps) {
                       <span>{label}</span>
                     </div>
                     {threads.map(t => (
-                      <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned={pinnedIds.has(t.id)} branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => setActiveId(t.id)} />
+                      <ThreadItem key={t.id} title={t.title} active={t.id === activeId} pinned={pinnedIds.has(t.id)} branched={t.branched} onPin={() => togglePin(t.id)} onSelect={() => onSelectThread?.(t.id)} />
                     ))}
                   </div>
                 ))}
               </div>
             </div>
+            )}
           </div>
 
-          <SidebarFooter />
+          <SidebarFooter activeProfileId={activeProfileId} onChangeProfile={(id) => { setActiveProfileId(id); onNewChat?.(); }} />
 
           {/* Resize handle */}
           <div className="absolute top-0 right-0 h-full w-2 cursor-col-resize" />
@@ -649,12 +665,11 @@ function CopySettingsDropdown({ profiles }: { profiles: Profile[] }) {
   );
 }
 
-function SidebarFooter() {
+function SidebarFooter({ activeProfileId, onChangeProfile }: { activeProfileId: string; onChangeProfile: (id: string) => void }) {
   const [profiles, setProfiles] = useState<Profile[]>([
     { id: "test", name: "test", icon: ICON_OPTIONS[1].path },
     { id: "default", name: "Default", icon: ICON_OPTIONS[0].path },
   ]);
-  const [activeProfile, setActiveProfile] = useState("test");
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [selectedIcon, setSelectedIcon] = useState(ICON_OPTIONS[2].path); // Bookmark default
@@ -663,7 +678,7 @@ function SidebarFooter() {
     if (!newName.trim()) return;
     const id = newName.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
     setProfiles(prev => [...prev, { id, name: newName.trim(), icon: selectedIcon }]);
-    setActiveProfile(id);
+    onChangeProfile(id);
     setNewName("");
     setSelectedIcon(ICON_OPTIONS[2].path);
     setShowCreate(false);
@@ -738,8 +753,8 @@ function SidebarFooter() {
                     <SortableProfileIcon
                       key={profile.id}
                       profile={profile}
-                      isActive={profile.id === activeProfile}
-                      onClick={() => setActiveProfile(profile.id)}
+                      isActive={profile.id === activeProfileId}
+                      onClick={() => onChangeProfile(profile.id)}
                     />
                   ))}
                 </div>

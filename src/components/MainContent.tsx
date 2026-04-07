@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { ChatInputForm } from "./ChatInputForm";
 import { TopRightButtons } from "./TopRightButtons";
 import { CornerDecoration } from "./CornerDecoration";
 import { DemoChat } from "./DemoChat";
+import { getConversationById } from "../data/conversations";
 import type { Model } from "../data/models";
 
 interface MainContentProps {
@@ -11,6 +12,9 @@ interface MainContentProps {
   modelTriggerRef?: React.RefObject<HTMLButtonElement | null>;
   isModelSelectorOpen?: boolean;
   sidebarOpen?: boolean;
+  activeThreadId?: string | null;
+  tempChatMode?: boolean;
+  onToggleTempChat?: () => void;
 }
 
 export function MainContent({
@@ -19,8 +23,34 @@ export function MainContent({
   modelTriggerRef,
   isModelSelectorOpen,
   sidebarOpen = true,
+  activeThreadId,
+  tempChatMode = false,
+  onToggleTempChat,
 }: MainContentProps) {
-  const [showDemoChat, setShowDemoChat] = useState(true);
+  const conversation = activeThreadId ? getConversationById(activeThreadId) : null;
+  const showChat = !!conversation;
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top when switching conversations
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+    setShowScrollButton(false);
+  }, [activeThreadId]);
+
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    // Show scroll button when not near bottom
+    setShowScrollButton(scrollHeight - scrollTop - clientHeight > 200);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, []);
 
   return (
     <main className="firefox-scrollbar-margin-fix min-h-pwa relative flex w-full flex-1 flex-col overflow-y-clip transition-[width,height] print:absolute print:top-0 print:left-0 print:h-auto print:min-h-auto print:overflow-visible">
@@ -46,6 +76,43 @@ export function MainContent({
         {/* Chat input (bottom floating) */}
         <div className="pointer-events-none absolute bottom-0 z-10 w-full overflow-x-visible px-2">
           <div className="relative mx-auto flex w-full max-w-3xl flex-col overflow-x-visible text-center">
+            {/* Scroll to bottom button */}
+            {showScrollButton && showChat && (
+              <div className="flex justify-center pb-4">
+                <button
+                  onClick={scrollToBottom}
+                  className="cursor-pointer justify-center font-medium whitespace-nowrap transition-colors focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-8 px-3 text-xs pointer-events-auto flex items-center gap-2 rounded-full border border-secondary/40 bg-(--chat-overlay) text-secondary-foreground/70 backdrop-blur-xl hover:bg-secondary"
+                >
+                  <span className="pb-0.5">Scroll to bottom</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down -mr-1 h-4 w-4" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {/* Long thread warning banner */}
+            {showBanner && showChat && (
+              <div className="pointer-events-auto mx-auto w-full">
+                <div className="mx-auto w-full max-w-[calc(100%-2rem)]">
+                  <div data-slot="banner-wrapper" data-exiting="false" className="grid" style={{ gridTemplateRows: "1fr", transition: "grid-template-rows 400ms cubic-bezier(0.22, 1, 0.36, 1)" }}>
+                    <div className="min-h-0 overflow-hidden">
+                      <div data-slot="banner" className="relative mx-auto w-full max-w-full min-w-0 rounded-t-md border p-4 text-left text-sm backdrop-blur-md transition-[border-top-left-radius,border-top-right-radius,border-top-width] duration-200 ease-out outline-none sm:max-w-[80ch] [&_a]:h-auto [&_a]:cursor-pointer [&_a]:p-0 [&_a]:underline grid grid-cols-[1fr_auto] gap-x-2 border-warning-foreground/20 bg-warning/8 text-warning-foreground dark:bg-warning/16" style={{ opacity: 1, transform: "none" }}>
+                        <div className="min-w-0">
+                          <p className="text-balance">Long threads can lower response quality and use limits faster. Consider starting a new one.</p>
+                        </div>
+                        <button aria-label="Dismiss banner" data-slot="banner-dismiss" className="h-max p-0.5" onClick={() => setShowBanner(false)}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x size-4" aria-hidden="true">
+                            <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="pointer-events-auto">
               <ChatInputForm
                 selectedModel={selectedModel}
@@ -59,6 +126,7 @@ export function MainContent({
 
         {/* Scroll container with welcome content */}
         <div
+          ref={scrollRef}
           id="chat-scroll-container"
           className={`absolute inset-0 overflow-y-scroll print:visible print:static print:inset-auto print:block print:h-auto print:scroll-pb-0! print:overflow-visible print:pt-2 print:pb-0! transition-[padding] ease-snappy ${sidebarOpen ? "pt-8 sm:pt-3.5" : "pt-2 sm:pt-0"}`}
           style={{
@@ -66,6 +134,7 @@ export function MainContent({
             scrollbarGutter: "stable both-edges",
             scrollPaddingBottom: "112px",
           }}
+          onScroll={handleScroll}
         >
           {/* Top-right corner (for scroll container) — hidden when sidebar closed */}
           <div
@@ -76,18 +145,18 @@ export function MainContent({
           </div>
 
           {/* Top-right buttons */}
-          <TopRightButtons />
+          <TopRightButtons tempChatMode={tempChatMode} onToggleTempChat={onToggleTempChat} />
 
           {/* Content: Demo Chat or Welcome */}
-          {showDemoChat ? (
-            <div className="animate-fade-in">
+          {showChat && conversation ? (
+            <div className="animate-fade-in" key={conversation.id}>
               <div
                 role="log"
                 aria-label="Chat messages"
                 aria-live="polite"
                 className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pt-safe-offset-10 pb-10"
               >
-                <DemoChat />
+                <DemoChat conversation={conversation} />
               </div>
             </div>
           ) : (
@@ -106,8 +175,8 @@ export function MainContent({
                     <h2 className="text-3xl font-semibold">
                       <span className="grid">
                         <span
-                          className="invisible col-start-1 row-start-1"
-                          aria-hidden="true"
+                          className={`col-start-1 row-start-1 ${tempChatMode ? "" : "invisible"}`}
+                          aria-hidden={!tempChatMode}
                         >
                           <span className="inline-flex items-baseline gap-2">
                             <span className="inline-flex size-7 shrink-0 items-center justify-center self-baseline">
@@ -133,8 +202,8 @@ export function MainContent({
                           </span>
                         </span>
                         <span
-                          className="col-start-1 row-start-1"
-                          aria-hidden="false"
+                          className={`col-start-1 row-start-1 ${tempChatMode ? "invisible" : ""}`}
+                          aria-hidden={tempChatMode}
                         >
                           How can I help you today?
                         </span>
